@@ -1,0 +1,746 @@
+{
+  "generated_by": "veyra.research.proof_pack",
+  "simulation_only": "There is no live trading. Every trade in this pack is a paper simulation; no real orders, no money, no slippage to measure beyond the cost model.",
+  "trades": [
+    {
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "side": "LONG",
+      "band": "CONVERGENT",
+      "entry_ts": 1788508800,
+      "entry_price": 2381.9907,
+      "notional": 1000.0,
+      "stop_price": 2334.350886,
+      "exit_ts": 1788595200,
+      "exit_price": 2457.04,
+      "exit_reason": "horizon",
+      "gross_return": 0.031507,
+      "fees": 3.0,
+      "net_return": 0.028507,
+      "pnl": 28.506966,
+      "cold_start": false,
+      "n_observed_at_decision_time": null
+    },
+    {
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "side": "LONG",
+      "band": "DIRECTIONAL",
+      "entry_ts": 1788537600,
+      "entry_price": 2381.9907,
+      "notional": 1000.0,
+      "stop_price": 2334.350886,
+      "exit_ts": 1788624000,
+      "exit_price": 2459.55,
+      "exit_reason": "horizon",
+      "gross_return": 0.032561,
+      "fees": 3.0,
+      "net_return": 0.029561,
+      "pnl": 29.560706,
+      "cold_start": false,
+      "n_observed_at_decision_time": null
+    },
+    {
+      "symbol": "SOL/USDT",
+      "timeframe": "4H",
+      "side": "LONG",
+      "band": "DIRECTIONAL",
+      "entry_ts": 1788724800,
+      "entry_price": 106.43955,
+      "notional": 1000.0,
+      "stop_price": 104.310759,
+      "exit_ts": 1788753600,
+      "exit_price": 104.310759,
+      "exit_reason": "stop",
+      "gross_return": -0.02,
+      "fees": 3.0,
+      "net_return": -0.023,
+      "pnl": -23.0,
+      "cold_start": true,
+      "n_observed_at_decision_time": null
+    },
+    {
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "side": "LONG",
+      "band": "DIRECTIONAL",
+      "entry_ts": 1788696000,
+      "entry_price": 2443.76805,
+      "notional": 1000.0,
+      "stop_price": 2394.892689,
+      "exit_ts": 1788782400,
+      "exit_price": 2489.48,
+      "exit_reason": "horizon",
+      "gross_return": 0.018706,
+      "fees": 3.0,
+      "net_return": 0.015706,
+      "pnl": 15.705519,
+      "cold_start": true,
+      "n_observed_at_decision_time": null
+    }
+  ],
+  "open_positions": 1,
+  "equity_curve": [
+    {
+      "exit_ts": 1788595200,
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "pnl": 28.506966,
+      "cumulative_pnl": 28.50696600000083,
+      "equity": 10028.506966
+    },
+    {
+      "exit_ts": 1788624000,
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "pnl": 29.560706,
+      "cumulative_pnl": 58.06767200000104,
+      "equity": 10058.067672
+    },
+    {
+      "exit_ts": 1788753600,
+      "symbol": "SOL/USDT",
+      "timeframe": "4H",
+      "pnl": -23.0,
+      "cumulative_pnl": 35.06767200000104,
+      "equity": 10035.067672
+    },
+    {
+      "exit_ts": 1788782400,
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "pnl": 15.705519,
+      "cumulative_pnl": 50.773191000000224,
+      "equity": 10050.773191
+    }
+  ],
+  "drawdown": {
+    "aggregate": {
+      "trades": 4,
+      "wins": 3,
+      "losses": 1,
+      "win_rate": 0.75,
+      "sum_pnl": 50.773191,
+      "final_equity": 10050.773191,
+      "max_drawdown_usd": 23.0,
+      "longest_losing_streak": 1,
+      "avg_win_usd": 24.59106367,
+      "avg_loss_usd": -23.0
+    },
+    "per_market": {
+      "ETH/USDT 4H": {
+        "trades": 3,
+        "wins": 3,
+        "losses": 0,
+        "win_rate": 1.0,
+        "sum_pnl": 73.773191,
+        "final_equity": 10073.773191,
+        "max_drawdown_usd": 0.0,
+        "longest_losing_streak": 0,
+        "avg_win_usd": 24.59106367,
+        "avg_loss_usd": null
+      },
+      "SOL/USDT 4H": {
+        "trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "win_rate": 0.0,
+        "sum_pnl": -23.0,
+        "final_equity": 9977.0,
+        "max_drawdown_usd": 23.0,
+        "longest_losing_streak": 1,
+        "avg_win_usd": null,
+        "avg_loss_usd": -23.0
+      }
+    }
+  },
+  "band_evidence": {
+    "markets": [
+      {
+        "symbol": "BTC/USDT",
+        "timeframe": "1D",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 86,
+            "cold_start": false,
+            "win_rate_raw": 0.75581395,
+            "mean_return_raw": 0.03782977,
+            "risk": 0.01684619,
+            "posterior_win_rate": 0.70754717,
+            "posterior_mean_return": 0.03069208,
+            "gate": "PASS"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 26,
+            "cold_start": false,
+            "win_rate_raw": 0.57692308,
+            "mean_return_raw": 0.00808569,
+            "risk": 0.01064473,
+            "posterior_win_rate": 0.54347826,
+            "posterior_mean_return": 0.00457017,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "BTC/USDT",
+        "timeframe": "4H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 199,
+            "cold_start": false,
+            "win_rate_raw": 0.6080402,
+            "mean_return_raw": 0.01443766,
+            "risk": 0.02136197,
+            "posterior_win_rate": 0.59817352,
+            "posterior_mean_return": 0.01311916,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 53,
+            "cold_start": false,
+            "win_rate_raw": 0.43396226,
+            "mean_return_raw": 0.00126843,
+            "risk": 0.01931977,
+            "posterior_win_rate": 0.45205479,
+            "posterior_mean_return": 0.00092092,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "BTC/USDT",
+        "timeframe": "1H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 3,
+            "cold_start": true,
+            "win_rate_raw": 0.0,
+            "mean_return_raw": -0.006376,
+            "risk": 0.006376,
+            "posterior_win_rate": 0.43478261,
+            "posterior_mean_return": -0.00083165,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 1,
+            "cold_start": true,
+            "win_rate_raw": 0.0,
+            "mean_return_raw": -0.008283,
+            "risk": 0.008283,
+            "posterior_win_rate": 0.47619048,
+            "posterior_mean_return": -0.00039443,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "ETH/USDT",
+        "timeframe": "1D",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 78,
+            "cold_start": false,
+            "win_rate_raw": 0.75641026,
+            "mean_return_raw": 0.07538347,
+            "risk": 0.02634942,
+            "posterior_win_rate": 0.70408163,
+            "posterior_mean_return": 0.05999909,
+            "gate": "PASS"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 18,
+            "cold_start": true,
+            "win_rate_raw": 0.38888889,
+            "mean_return_raw": -0.00544317,
+            "risk": 0.025043,
+            "posterior_win_rate": 0.44736842,
+            "posterior_mean_return": -0.00257834,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "ETH/USDT",
+        "timeframe": "4H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 10,
+            "cold_start": true,
+            "win_rate_raw": 0.6,
+            "mean_return_raw": 0.0231195,
+            "risk": 0.0106245,
+            "posterior_win_rate": 0.53333333,
+            "posterior_mean_return": 0.0077065,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 2,
+            "cold_start": true,
+            "win_rate_raw": 0.5,
+            "mean_return_raw": 0.000844,
+            "risk": 0.003678,
+            "posterior_win_rate": 0.5,
+            "posterior_mean_return": 7.673e-05,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "ETH/USDT",
+        "timeframe": "1H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 3,
+            "cold_start": true,
+            "win_rate_raw": 0.33333333,
+            "mean_return_raw": -0.007176,
+            "risk": 0.010989,
+            "posterior_win_rate": 0.47826087,
+            "posterior_mean_return": -0.000936,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "SOL/USDT",
+        "timeframe": "1D",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 27,
+            "cold_start": false,
+            "win_rate_raw": 0.81481481,
+            "mean_return_raw": 0.09252607,
+            "risk": 0.0419682,
+            "posterior_win_rate": 0.68085106,
+            "posterior_mean_return": 0.05315328,
+            "gate": "PASS"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 6,
+            "cold_start": true,
+            "win_rate_raw": 0.66666667,
+            "mean_return_raw": 0.00799433,
+            "risk": 0.031454,
+            "posterior_win_rate": 0.53846154,
+            "posterior_mean_return": 0.00184485,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "SOL/USDT",
+        "timeframe": "4H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 5,
+            "cold_start": true,
+            "win_rate_raw": 0.8,
+            "mean_return_raw": 0.0092296,
+            "risk": 0.032806,
+            "posterior_win_rate": 0.56,
+            "posterior_mean_return": 0.00184592,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 4,
+            "cold_start": true,
+            "win_rate_raw": 0.75,
+            "mean_return_raw": 0.00352475,
+            "risk": 0.0113,
+            "posterior_win_rate": 0.54166667,
+            "posterior_mean_return": 0.00058746,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "SOL/USDT",
+        "timeframe": "1H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 3,
+            "cold_start": true,
+            "win_rate_raw": 1.0,
+            "mean_return_raw": 0.02169567,
+            "risk": null,
+            "posterior_win_rate": 0.56521739,
+            "posterior_mean_return": 0.00282987,
+            "gate": "PASS"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 2,
+            "cold_start": true,
+            "win_rate_raw": 0.0,
+            "mean_return_raw": -0.004855,
+            "risk": 0.004855,
+            "posterior_win_rate": 0.45454545,
+            "posterior_mean_return": -0.00044136,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "BNB/USDT",
+        "timeframe": "1D",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 26,
+            "cold_start": false,
+            "win_rate_raw": 0.65384615,
+            "mean_return_raw": 0.01913169,
+            "risk": 0.018137,
+            "posterior_win_rate": 0.58695652,
+            "posterior_mean_return": 0.01081357,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 9,
+            "cold_start": true,
+            "win_rate_raw": 0.33333333,
+            "mean_return_raw": -0.00535889,
+            "risk": 0.0128055,
+            "posterior_win_rate": 0.44827586,
+            "posterior_mean_return": -0.0016631,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "BNB/USDT",
+        "timeframe": "4H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 10,
+            "cold_start": true,
+            "win_rate_raw": 0.8,
+            "mean_return_raw": 0.0144676,
+            "risk": 0.0175755,
+            "posterior_win_rate": 0.6,
+            "posterior_mean_return": 0.00482253,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 2,
+            "cold_start": true,
+            "win_rate_raw": 1.0,
+            "mean_return_raw": 0.058023,
+            "risk": null,
+            "posterior_win_rate": 0.54545455,
+            "posterior_mean_return": 0.00527482,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "BNB/USDT",
+        "timeframe": "1H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 2,
+            "cold_start": true,
+            "win_rate_raw": 0.0,
+            "mean_return_raw": -0.015543,
+            "risk": 0.015543,
+            "posterior_win_rate": 0.45454545,
+            "posterior_mean_return": -0.001413,
+            "gate": "quality_gate_failed"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 1,
+            "cold_start": true,
+            "win_rate_raw": 1.0,
+            "mean_return_raw": 0.002245,
+            "risk": null,
+            "posterior_win_rate": 0.52380952,
+            "posterior_mean_return": 0.0001069,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      },
+      {
+        "symbol": "UNI/USDT",
+        "timeframe": "4H",
+        "bands": [
+          {
+            "band": "CONVERGENT",
+            "n_observed": 94,
+            "cold_start": false,
+            "win_rate_raw": 0.71276596,
+            "mean_return_raw": 0.04457635,
+            "risk": 0.02423126,
+            "posterior_win_rate": 0.6754386,
+            "posterior_mean_return": 0.03675594,
+            "gate": "PASS"
+          },
+          {
+            "band": "DIRECTIONAL",
+            "n_observed": 61,
+            "cold_start": false,
+            "win_rate_raw": 0.70491803,
+            "mean_return_raw": 0.02831475,
+            "risk": 0.02529706,
+            "posterior_win_rate": 0.65432099,
+            "posterior_mean_return": 0.02132346,
+            "gate": "quality_gate_failed"
+          }
+        ]
+      }
+    ]
+  },
+  "phase5": [
+    {
+      "symbol": "BTC/USDT",
+      "timeframe": "4H",
+      "candles": 19804,
+      "strategy": "phase5-baseline-v1",
+      "verdict": "MIXED",
+      "full": {
+        "trades": 3135,
+        "win_rate": 0.42328549,
+        "avg_return": 0.00187468,
+        "expectancy": 0.00187468,
+        "max_drawdown": -0.98512808,
+        "longest_losing_streak": 59,
+        "profit_factor": 1.16007809,
+        "total_fees": 6.27,
+        "setups_per_bar": 0.17789335
+      },
+      "periods": [
+        {
+          "label": "IN",
+          "trades": 1879,
+          "win_rate": 0.4486429,
+          "avg_return": 0.00416384,
+          "expectancy": 0.00416384,
+          "max_drawdown": -0.97389404,
+          "longest_losing_streak": 36,
+          "profit_factor": 1.33508126,
+          "avg_holding_bars": 6.26184141,
+          "total_fees": 3.758
+        },
+        {
+          "label": "VALIDATION",
+          "trades": 591,
+          "win_rate": 0.39593909,
+          "avg_return": -0.00069571,
+          "expectancy": -0.00069571,
+          "max_drawdown": -0.83145472,
+          "longest_losing_streak": 59,
+          "profit_factor": 0.92836244,
+          "avg_holding_bars": 5.19966159,
+          "total_fees": 1.182
+        },
+        {
+          "label": "OOS",
+          "trades": 665,
+          "win_rate": 0.37593985,
+          "avg_return": -0.00230915,
+          "expectancy": -0.00230915,
+          "max_drawdown": -0.92887926,
+          "longest_losing_streak": 32,
+          "profit_factor": 0.79862316,
+          "avg_holding_bars": 7.46466165,
+          "total_fees": 1.33
+        }
+      ]
+    },
+    {
+      "symbol": "ETH/USDT",
+      "timeframe": "4H",
+      "candles": 19804,
+      "strategy": "phase5-baseline-v1",
+      "verdict": "MIXED",
+      "full": {
+        "trades": 2893,
+        "win_rate": 0.42965779,
+        "avg_return": 0.00119295,
+        "expectancy": 0.00119295,
+        "max_drawdown": -0.9993843,
+        "longest_losing_streak": 50,
+        "profit_factor": 1.07787973,
+        "total_fees": 5.786,
+        "setups_per_bar": 0.16420925
+      },
+      "periods": [
+        {
+          "label": "IN",
+          "trades": 1646,
+          "win_rate": 0.44410693,
+          "avg_return": 0.00104838,
+          "expectancy": 0.00104838,
+          "max_drawdown": -0.99230833,
+          "longest_losing_streak": 25,
+          "profit_factor": 1.06503776,
+          "avg_holding_bars": 5.35297691,
+          "total_fees": 3.292
+        },
+        {
+          "label": "VALIDATION",
+          "trades": 600,
+          "win_rate": 0.45833333,
+          "avg_return": 0.01180327,
+          "expectancy": 0.01180327,
+          "max_drawdown": -0.80555461,
+          "longest_losing_streak": 46,
+          "profit_factor": 2.20279513,
+          "avg_holding_bars": 7.47,
+          "total_fees": 1.2
+        },
+        {
+          "label": "OOS",
+          "trades": 647,
+          "win_rate": 0.36630603,
+          "avg_return": -0.0082788,
+          "expectancy": -0.0082788,
+          "max_drawdown": -0.9993843,
+          "longest_losing_streak": 50,
+          "profit_factor": 0.54965469,
+          "avg_holding_bars": 7.07264297,
+          "total_fees": 1.294
+        }
+      ]
+    },
+    {
+      "symbol": "BTC/USDT",
+      "timeframe": "1D",
+      "candles": 3304,
+      "strategy": "phase5-baseline-v1",
+      "verdict": "MIXED",
+      "full": {
+        "trades": 437,
+        "win_rate": 0.50343249,
+        "avg_return": 0.00943599,
+        "expectancy": 0.00943599,
+        "max_drawdown": -0.89548575,
+        "longest_losing_streak": 19,
+        "profit_factor": 1.51233637,
+        "total_fees": 0.874,
+        "setups_per_bar": 0.15072639
+      },
+      "periods": [
+        {
+          "label": "IN",
+          "trades": 196,
+          "win_rate": 0.51020408,
+          "avg_return": 0.00733053,
+          "expectancy": 0.00733053,
+          "max_drawdown": -0.78816661,
+          "longest_losing_streak": 16,
+          "profit_factor": 1.3122863,
+          "avg_holding_bars": 7.01020408,
+          "total_fees": 0.392
+        },
+        {
+          "label": "VALIDATION",
+          "trades": 136,
+          "win_rate": 0.47058824,
+          "avg_return": 0.00827392,
+          "expectancy": 0.00827392,
+          "max_drawdown": -0.64796498,
+          "longest_losing_streak": 19,
+          "profit_factor": 1.49639393,
+          "avg_holding_bars": 5.58823529,
+          "total_fees": 0.272
+        },
+        {
+          "label": "OOS",
+          "trades": 105,
+          "win_rate": 0.53333333,
+          "avg_return": 0.01487135,
+          "expectancy": 0.01487135,
+          "max_drawdown": -0.3837183,
+          "longest_losing_streak": 10,
+          "profit_factor": 2.32243491,
+          "avg_holding_bars": 7.93333333,
+          "total_fees": 0.21
+        }
+      ]
+    },
+    {
+      "symbol": "ETH/USDT",
+      "timeframe": "1D",
+      "candles": 3304,
+      "strategy": "phase5-baseline-v1",
+      "verdict": "MIXED",
+      "full": {
+        "trades": 402,
+        "win_rate": 0.49502488,
+        "avg_return": 0.01173469,
+        "expectancy": 0.01173469,
+        "max_drawdown": -0.92085397,
+        "longest_losing_streak": 23,
+        "profit_factor": 1.48072716,
+        "total_fees": 0.804,
+        "setups_per_bar": 0.13317191
+      },
+      "periods": [
+        {
+          "label": "IN",
+          "trades": 237,
+          "win_rate": 0.55696203,
+          "avg_return": 0.02774268,
+          "expectancy": 0.02774268,
+          "max_drawdown": -0.73688623,
+          "longest_losing_streak": 23,
+          "profit_factor": 2.24177959,
+          "avg_holding_bars": 5.77637131,
+          "total_fees": 0.474
+        },
+        {
+          "label": "VALIDATION",
+          "trades": 95,
+          "win_rate": 0.4,
+          "avg_return": -0.01197948,
+          "expectancy": -0.01197948,
+          "max_drawdown": -0.73293186,
+          "longest_losing_streak": 19,
+          "profit_factor": 0.47313505,
+          "avg_holding_bars": 4.47368421,
+          "total_fees": 0.19
+        },
+        {
+          "label": "OOS",
+          "trades": 70,
+          "win_rate": 0.41428571,
+          "avg_return": -0.01028026,
+          "expectancy": -0.01028026,
+          "max_drawdown": -0.80309148,
+          "longest_losing_streak": 21,
+          "profit_factor": 0.69482663,
+          "avg_holding_bars": 7.62857143,
+          "total_fees": 0.14
+        }
+      ]
+    }
+  ],
+  "cost_tracker": {
+    "records": 0,
+    "total_fees_usd": 0.0,
+    "total_slippage_usd": 0.0,
+    "entries": []
+  }
+}

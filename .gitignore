@@ -1,0 +1,32 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Environment
+.venv/
+venv/
+env/
+
+# Config secrets
+config/.env
+.env
+
+# Data (raw + processed)
+data/
+!data/.gitkeep
+
+# Research scan-store (cached candle artifacts)
+src/reports/_scanstore/
+
+# Test / build artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store

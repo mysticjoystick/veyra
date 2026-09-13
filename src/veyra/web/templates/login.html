@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veyra — sign in</title>
+<style>
+  :root {
+    --bg-0: #05060d; --bg-1: #0a0d1c; --panel: rgba(20,24,45,.7);
+    --line: rgba(96,118,255,.16); --text: #e8ecff; --muted: #8b95b8;
+    --cyan: #2be0ff; --violet: #c86bff; --bad: #ff5f7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif; line-height: 1.5;
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(48,74,255,.14), transparent 60%),
+      radial-gradient(900px 600px at 0% 10%, rgba(200,107,255,.10), transparent 55%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1));
+    background-attachment: fixed; overflow-x: hidden;
+  }
+  .frame { max-width: 440px; margin: 12vh auto 0; padding: 26px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.45);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .logo {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(43,224,255,.9), rgba(200,107,255,.9));
+  }
+  .logo::after { content: ""; position: absolute; inset: 5px; border-radius: 6px; }
+  .brand b { font-size: 19px; letter-spacing: .3px; }
+  .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 16px 0 6px; }
+  input {
+    width: 100%; padding: 11px 12px; border-radius: 10px; font-size: 15px;
+    background: rgba(10,13,28,.92); border: 1px solid var(--line); color: var(--text);
+  }
+  input:focus { outline: none; border-color: var(--cyan); }
+  button {
+    width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 12px;
+    cursor: pointer; font-size: 15px; font-weight: 600; color: #05060d;
+    background: linear-gradient(135deg, rgba(43,224,255,.9), rgba(200,107,255,.9));
+  }
+  .error { color: var(--bad); font-size: 13px; margin-top: 14px; }
+  .foot { color: var(--muted); font-size: 12px; margin-top: 18px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="card">
+    <div class="brand">
+      <span class="logo"></span>
+      <div><b>Veyra</b><div class="sub">command-center · sentient market scan</div></div>
+    </div>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <form method="post" action="/login">
+      <input type="hidden" name="next" value="{{ next or '/' }}">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" value="{{ email or '' }}" autofocus required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+      <button type="submit">Sign in</button>
+    </form>
+    <div class="foot">Accounts are provisioned by the operator. Sign-up is closed pre-launch.</div>
+  </div>
+</div>
+</body>
+</html>

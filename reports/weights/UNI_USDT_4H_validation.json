@@ -1,0 +1,147 @@
+{
+  "bars": 13090,
+  "baseline": {
+    "MOMENTUM": 0.12,
+    "PULLBACK": 0.15,
+    "STRUCTURE": 0.2,
+    "TREND": 0.25,
+    "VOLATILITY": 0.05,
+    "VOLUME": 0.07
+  },
+  "combo_details": {
+    "BREAKOUT LONG": {
+      "n_oos": 32,
+      "n_total": 126,
+      "n_val": 18,
+      "oos_expectancy": 0.02852,
+      "oos_win": 0.656,
+      "qualifies": true,
+      "val_expectancy": 0.07252,
+      "val_win": 0.611
+    },
+    "BREAKOUT SHORT": {
+      "n_oos": 5,
+      "n_total": 124,
+      "n_val": 23,
+      "oos_expectancy": 0.06376,
+      "oos_win": 1.0,
+      "qualifies": true,
+      "val_expectancy": 0.06216,
+      "val_win": 1.0
+    },
+    "BREAKOUT_RETEST LONG": {
+      "n_oos": 27,
+      "n_total": 175,
+      "n_val": 30,
+      "oos_expectancy": -0.00585,
+      "oos_win": 0.444,
+      "qualifies": false,
+      "val_expectancy": 0.00016,
+      "val_win": 0.4
+    },
+    "BREAKOUT_RETEST SHORT": {
+      "n_oos": 22,
+      "n_total": 318,
+      "n_val": 41,
+      "oos_expectancy": 0.01298,
+      "oos_win": 0.636,
+      "qualifies": true,
+      "val_expectancy": 0.01628,
+      "val_win": 0.683
+    },
+    "PULLBACK LONG": {
+      "n_oos": 66,
+      "n_total": 468,
+      "n_val": 54,
+      "oos_expectancy": 0.01584,
+      "oos_win": 0.576,
+      "qualifies": false,
+      "val_expectancy": -0.00764,
+      "val_win": 0.389
+    },
+    "TREND_CONTINUATION LONG": {
+      "n_oos": 105,
+      "n_total": 538,
+      "n_val": 104,
+      "oos_expectancy": 0.07881,
+      "oos_win": 0.857,
+      "qualifies": true,
+      "val_expectancy": 0.07736,
+      "val_win": 0.846
+    }
+  },
+  "market": {
+    "baseline": {
+      "MOMENTUM": 0.12,
+      "PULLBACK": 0.15,
+      "STRUCTURE": 0.2,
+      "TREND": 0.25,
+      "VOLATILITY": 0.05,
+      "VOLUME": 0.07
+    },
+    "baseline_result": {
+      "test": {
+        "expectancy": 0.04155275732174115,
+        "mean_score": 82.27626459143968,
+        "n_eligible": 257,
+        "win_rate": 0.7003891050583657
+      },
+      "val": {
+        "expectancy": 0.04088814604328981,
+        "mean_score": 80.81851851851852,
+        "n_eligible": 270,
+        "win_rate": 0.6777777777777778
+      },
+      "val_ci": {
+        "hi": 0.0488633265365758,
+        "lo": 0.031532964582934
+      },
+      "weights": {
+        "MOMENTUM": 0.12,
+        "PULLBACK": 0.15,
+        "STRUCTURE": 0.2,
+        "TREND": 0.25,
+        "VOLATILITY": 0.05,
+        "VOLUME": 0.07
+      }
+    },
+    "best": {
+      "test": {
+        "expectancy": 0.04261905231144155,
+        "mean_score": 81.47908745247149,
+        "n_eligible": 263,
+        "win_rate": 0.7072243346007605
+      },
+      "val": {
+        "expectancy": 0.04050199517309075,
+        "mean_score": 80.77443609022556,
+        "n_eligible": 266,
+        "win_rate": 0.6766917293233082
+      },
+      "val_ci": {
+        "hi": 0.05086406143246809,
+        "lo": 0.031158248385361725
+      },
+      "weights": {
+        "MOMENTUM": 0.12759493670886077,
+        "PULLBACK": 0.15949367088607597,
+        "STRUCTURE": 0.2126582278481013,
+        "TREND": 0.2126582278481013,
+        "VOLATILITY": 0.05316455696202532,
+        "VOLUME": 0.07443037974683546
+      }
+    },
+    "flagged_ci_crosses_zero": 0,
+    "n_candidates": 13,
+    "rows_dumped": 1749
+  },
+  "qualified_combos": [
+    "BREAKOUT LONG",
+    "BREAKOUT SHORT",
+    "BREAKOUT_RETEST SHORT",
+    "TREND_CONTINUATION LONG"
+  ],
+  "setups_dumped": 1749,
+  "symbol": "UNI/USDT",
+  "timeframe": "4H"
+}

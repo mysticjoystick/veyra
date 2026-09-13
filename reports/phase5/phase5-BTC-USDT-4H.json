@@ -1,0 +1,894 @@
+{
+  "symbol": "BTC/USDT",
+  "timeframe": "4H",
+  "validation": {
+    "symbol": "BTC/USDT",
+    "timeframe": "4H",
+    "candle_count": 19804,
+    "start_ts": 1502942400,
+    "end_ts": 1788336000,
+    "strategy_version": "phase5-baseline-v1",
+    "engine_version": "EngineVersion(market_pipeline='phase2.1', setup_engine='phase3.1', backtest='phase4.0')",
+    "overall": {
+      "trades": {
+        "total_setups": 3523,
+        "qualified_setups": 3135,
+        "triggered_setups": 3135,
+        "completed_trades": 3135,
+        "wins": 1327,
+        "losses": 1808,
+        "breakeven": 0,
+        "win_rate": 0.42328548644338115,
+        "average_win": 0.03209584241668892,
+        "average_loss": -0.020306452052769965,
+        "largest_win": 0.2511011419178463,
+        "largest_loss": -0.13366886004478729,
+        "average_return": 0.001874678652484266,
+        "median_return": -0.0036106490778121184
+      },
+      "risk": {
+        "expectancy": 0.001874678652484266,
+        "profit_factor": 1.160078093387057,
+        "cumulative_return": 38.29073843008368,
+        "max_drawdown": -0.9851280798062759,
+        "average_drawdown": -0.8268234344017651,
+        "longest_losing_streak": 59,
+        "longest_winning_streak": 44,
+        "average_holding_bars": 6.316746411483254,
+        "max_holding_bars": 23,
+        "total_fees": 6.2699999999995315,
+        "total_slippage": 0.0
+      },
+      "opportunity": {
+        "qualification_rate": 0.889866590973602,
+        "trigger_rate": 0.889866590973602,
+        "invalidation_rate": 0.0,
+        "expiry_rate": 0.11013340902639795,
+        "setups_per_bar": 0.17789335487780247,
+        "trades_per_bar": 0.1583013532619673
+      },
+      "by_setup_type": {
+        "BREAKOUT": {
+          "trades": 907,
+          "wins": 398,
+          "losses": 509,
+          "win_rate": 0.4388092613009923,
+          "average_return": 0.00840605192785421,
+          "cumulative_return": 617.6228367759646,
+          "profit_factor": 1.6258968329581547,
+          "expectancy": 0.00840605192785421
+        },
+        "BREAKOUT_RETEST": {
+          "trades": 820,
+          "wins": 295,
+          "losses": 525,
+          "win_rate": 0.3597560975609756,
+          "average_return": 0.0020572381376337367,
+          "cumulative_return": 2.3809396133083838,
+          "profit_factor": 1.2033967136011214,
+          "expectancy": 0.0020572381376337367
+        },
+        "TREND_CONTINUATION": {
+          "trades": 670,
+          "wins": 298,
+          "losses": 372,
+          "win_rate": 0.44477611940298506,
+          "average_return": -0.002471466533239749,
+          "cumulative_return": -0.851430713910337,
+          "profit_factor": 0.7802186378337509,
+          "expectancy": -0.002471466533239749
+        },
+        "PULLBACK": {
+          "trades": 738,
+          "wins": 336,
+          "losses": 402,
+          "win_rate": 0.45528455284552843,
+          "average_return": -0.0024095179114019326,
+          "cumulative_return": -0.8735561262576226,
+          "profit_factor": 0.7957153143568328,
+          "expectancy": -0.0024095179114019326
+        }
+      },
+      "by_timeframe": {
+        "4H": {
+          "trades": 3135,
+          "wins": 1327,
+          "losses": 1808,
+          "win_rate": 0.42328548644338115,
+          "average_return": 0.001874678652484266,
+          "cumulative_return": 38.29073843008368,
+          "profit_factor": 1.160078093387057,
+          "expectancy": 0.001874678652484266
+        }
+      },
+      "by_regime": {
+        "BEAR": {
+          "trades": 818,
+          "wins": 274,
+          "losses": 544,
+          "win_rate": 0.33496332518337407,
+          "average_return": -0.0001834136238108578,
+          "cumulative_return": -0.6136080068021614,
+          "profit_factor": 0.9883717623551596,
+          "expectancy": -0.0001834136238108578
+        },
+        "BULL": {
+          "trades": 2317,
+          "wins": 1053,
+          "losses": 1264,
+          "win_rate": 0.4544669831678895,
+          "average_return": 0.0026012731634939383,
+          "cumulative_return": 100.68621276260897,
+          "profit_factor": 1.2531176866803797,
+          "expectancy": 0.0026012731634939383
+        }
+      },
+      "by_score_bucket": {
+        "20-39": {
+          "trades": 1236,
+          "wins": 545,
+          "losses": 691,
+          "win_rate": 0.44093851132686085,
+          "average_return": 0.004167589137046706,
+          "cumulative_return": 52.07378905294707,
+          "profit_factor": 1.3302486079379572,
+          "expectancy": 0.004167589137046706
+        },
+        "0-19": {
+          "trades": 1899,
+          "wins": 782,
+          "losses": 1117,
+          "win_rate": 0.41179568193786203,
+          "average_return": 0.0003822945772240365,
+          "cumulative_return": -0.2596959981340874,
+          "profit_factor": 1.0343799524984094,
+          "expectancy": 0.0003822945772240365
+        }
+      }
+    },
+    "breakdown": {
+      "trades": {
+        "total_setups": 3523,
+        "qualified_setups": 3135,
+        "triggered_setups": 3135,
+        "completed_trades": 3135,
+        "wins": 1327,
+        "losses": 1808,
+        "breakeven": 0,
+        "win_rate": 0.42328548644338115,
+        "average_win": 0.03209584241668892,
+        "average_loss": -0.020306452052769965,
+        "largest_win": 0.2511011419178463,
+        "largest_loss": -0.13366886004478729,
+        "average_return": 0.001874678652484266,
+        "median_return": -0.0036106490778121184
+      },
+      "risk": {
+        "expectancy": 0.001874678652484266,
+        "profit_factor": 1.160078093387057,
+        "cumulative_return": 38.29073843008368,
+        "max_drawdown": -0.9851280798062759,
+        "average_drawdown": -0.8268234344017651,
+        "longest_losing_streak": 59,
+        "longest_winning_streak": 44,
+        "average_holding_bars": 6.316746411483254,
+        "max_holding_bars": 23,
+        "total_fees": 6.2699999999995315,
+        "total_slippage": 0.0
+      },
+      "opportunity": {
+        "qualification_rate": 0.889866590973602,
+        "trigger_rate": 0.889866590973602,
+        "invalidation_rate": 0.0,
+        "expiry_rate": 0.11013340902639795,
+        "setups_per_bar": 0.17789335487780247,
+        "trades_per_bar": 0.1583013532619673
+      },
+      "by_setup_type": {
+        "BREAKOUT": {
+          "trades": 907,
+          "wins": 398,
+          "losses": 509,
+          "win_rate": 0.4388092613009923,
+          "average_return": 0.00840605192785421,
+          "cumulative_return": 617.6228367759646,
+          "profit_factor": 1.6258968329581547,
+          "expectancy": 0.00840605192785421
+        },
+        "BREAKOUT_RETEST": {
+          "trades": 820,
+          "wins": 295,
+          "losses": 525,
+          "win_rate": 0.3597560975609756,
+          "average_return": 0.0020572381376337367,
+          "cumulative_return": 2.3809396133083838,
+          "profit_factor": 1.2033967136011214,
+          "expectancy": 0.0020572381376337367
+        },
+        "TREND_CONTINUATION": {
+          "trades": 670,
+          "wins": 298,
+          "losses": 372,
+          "win_rate": 0.44477611940298506,
+          "average_return": -0.002471466533239749,
+          "cumulative_return": -0.851430713910337,
+          "profit_factor": 0.7802186378337509,
+          "expectancy": -0.002471466533239749
+        },
+        "PULLBACK": {
+          "trades": 738,
+          "wins": 336,
+          "losses": 402,
+          "win_rate": 0.45528455284552843,
+          "average_return": -0.0024095179114019326,
+          "cumulative_return": -0.8735561262576226,
+          "profit_factor": 0.7957153143568328,
+          "expectancy": -0.0024095179114019326
+        }
+      },
+      "by_timeframe": {
+        "4H": {
+          "trades": 3135,
+          "wins": 1327,
+          "losses": 1808,
+          "win_rate": 0.42328548644338115,
+          "average_return": 0.001874678652484266,
+          "cumulative_return": 38.29073843008368,
+          "profit_factor": 1.160078093387057,
+          "expectancy": 0.001874678652484266
+        }
+      },
+      "by_regime": {
+        "BEAR": {
+          "trades": 818,
+          "wins": 274,
+          "losses": 544,
+          "win_rate": 0.33496332518337407,
+          "average_return": -0.0001834136238108578,
+          "cumulative_return": -0.6136080068021614,
+          "profit_factor": 0.9883717623551596,
+          "expectancy": -0.0001834136238108578
+        },
+        "BULL": {
+          "trades": 2317,
+          "wins": 1053,
+          "losses": 1264,
+          "win_rate": 0.4544669831678895,
+          "average_return": 0.0026012731634939383,
+          "cumulative_return": 100.68621276260897,
+          "profit_factor": 1.2531176866803797,
+          "expectancy": 0.0026012731634939383
+        }
+      },
+      "by_score_bucket": {
+        "20-39": {
+          "trades": 1236,
+          "wins": 545,
+          "losses": 691,
+          "win_rate": 0.44093851132686085,
+          "average_return": 0.004167589137046706,
+          "cumulative_return": 52.07378905294707,
+          "profit_factor": 1.3302486079379572,
+          "expectancy": 0.004167589137046706
+        },
+        "0-19": {
+          "trades": 1899,
+          "wins": 782,
+          "losses": 1117,
+          "win_rate": 0.41179568193786203,
+          "average_return": 0.0003822945772240365,
+          "cumulative_return": -0.2596959981340874,
+          "profit_factor": 1.0343799524984094,
+          "expectancy": 0.0003822945772240365
+        }
+      }
+    },
+    "periods": [
+      {
+        "label": "IN",
+        "start_ts": 1502942400,
+        "end_ts": 1674259200,
+        "index": [
+          0,
+          11882
+        ],
+        "counts": {
+          "trades": 1879,
+          "setups": 2107,
+          "completed": 1879
+        },
+        "metrics": {
+          "trades": {
+            "total_setups": 2107,
+            "qualified_setups": 1879,
+            "triggered_setups": 1879,
+            "completed_trades": 1879,
+            "wins": 843,
+            "losses": 1036,
+            "breakeven": 0,
+            "win_rate": 0.4486428951569984,
+            "average_win": 0.036978671448786554,
+            "average_loss": -0.022537795013512114,
+            "largest_win": 0.2511011419178463,
+            "largest_loss": -0.13366886004478729,
+            "average_return": 0.004163844809648008,
+            "median_return": -0.002770023177955133
+          },
+          "risk": {
+            "expectancy": 0.004163844809648008,
+            "profit_factor": 1.3350812560406355,
+            "cumulative_return": 424.6372834140645,
+            "max_drawdown": -0.9738940396405811,
+            "average_drawdown": -0.7606267754986376,
+            "longest_losing_streak": 36,
+            "longest_winning_streak": 44,
+            "average_holding_bars": 6.261841405002661,
+            "max_holding_bars": 23,
+            "total_fees": 3.7579999999998077,
+            "total_slippage": 0.0
+          },
+          "opportunity": {
+            "qualification_rate": 0.8917892738490745,
+            "trigger_rate": 0.8917892738490745,
+            "invalidation_rate": 0.0,
+            "expiry_rate": 0.10821072615092549,
+            "setups_per_bar": 0.1063926479499091,
+            "trades_per_bar": 0.09487982225812967
+          },
+          "by_setup_type": {
+            "BREAKOUT": {
+              "trades": 582,
+              "wins": 294,
+              "losses": 288,
+              "win_rate": 0.5051546391752577,
+              "average_return": 0.015473332042209631,
+              "cumulative_return": 2864.2488386998175,
+              "profit_factor": 2.150057798741573,
+              "expectancy": 0.015473332042209631
+            },
+            "BREAKOUT_RETEST": {
+              "trades": 513,
+              "wins": 187,
+              "losses": 326,
+              "win_rate": 0.3645224171539961,
+              "average_return": 0.003300440189662564,
+              "cumulative_return": 2.740974531898761,
+              "profit_factor": 1.3032917989544035,
+              "expectancy": 0.003300440189662564
+            },
+            "TREND_CONTINUATION": {
+              "trades": 370,
+              "wins": 168,
+              "losses": 202,
+              "win_rate": 0.4540540540540541,
+              "average_return": -0.0035225755714023816,
+              "cumulative_return": -0.7687694302838611,
+              "profit_factor": 0.7126345977502042,
+              "expectancy": -0.0035225755714023816
+            },
+            "PULLBACK": {
+              "trades": 414,
+              "wins": 194,
+              "losses": 220,
+              "win_rate": 0.46859903381642515,
+              "average_return": -0.003795622480955102,
+              "cumulative_return": -0.8282695465342356,
+              "profit_factor": 0.7090386375243526,
+              "expectancy": -0.003795622480955102
+            }
+          },
+          "by_timeframe": {
+            "4H": {
+              "trades": 1879,
+              "wins": 843,
+              "losses": 1036,
+              "win_rate": 0.4486428951569984,
+              "average_return": 0.004163844809648008,
+              "cumulative_return": 424.6372834140645,
+              "profit_factor": 1.3350812560406355,
+              "expectancy": 0.004163844809648008
+            }
+          },
+          "by_regime": {
+            "BEAR": {
+              "trades": 557,
+              "wins": 182,
+              "losses": 375,
+              "win_rate": 0.3267504488330341,
+              "average_return": 0.0005084485651718113,
+              "cumulative_return": -0.3110150051945568,
+              "profit_factor": 1.0303531093164078,
+              "expectancy": 0.0005084485651718113
+            },
+            "BULL": {
+              "trades": 1322,
+              "wins": 661,
+              "losses": 661,
+              "win_rate": 0.5,
+              "average_return": 0.005703977720520354,
+              "cumulative_return": 616.774387864946,
+              "profit_factor": 1.537896840481494,
+              "expectancy": 0.005703977720520354
+            }
+          },
+          "by_score_bucket": {
+            "20-39": {
+              "trades": 736,
+              "wins": 357,
+              "losses": 379,
+              "win_rate": 0.485054347826087,
+              "average_return": 0.008581420886204104,
+              "cumulative_return": 214.56508972774736,
+              "profit_factor": 1.6753128312136887,
+              "expectancy": 0.008581420886204104
+            },
+            "0-19": {
+              "trades": 1143,
+              "wins": 486,
+              "losses": 657,
+              "win_rate": 0.4251968503937008,
+              "average_return": 0.001319281386773742,
+              "cumulative_return": 0.9745186196504936,
+              "profit_factor": 1.1077363506257265,
+              "expectancy": 0.001319281386773742
+            }
+          }
+        }
+      },
+      {
+        "label": "VALIDATION",
+        "start_ts": 1674273600,
+        "end_ts": 1731297600,
+        "index": [
+          11882,
+          15843
+        ],
+        "counts": {
+          "trades": 591,
+          "setups": 686,
+          "completed": 593
+        },
+        "metrics": {
+          "trades": {
+            "total_setups": 686,
+            "qualified_setups": 593,
+            "triggered_setups": 591,
+            "completed_trades": 591,
+            "wins": 234,
+            "losses": 357,
+            "breakeven": 0,
+            "win_rate": 0.39593908629441626,
+            "average_win": 0.022770602004247378,
+            "average_loss": -0.016076984409613065,
+            "largest_win": 0.10909920454179174,
+            "largest_loss": -0.08467168865153668,
+            "average_return": -0.0006957065401657785,
+            "median_return": -0.004145727800376965
+          },
+          "risk": {
+            "expectancy": -0.0006957065401657785,
+            "profit_factor": 0.9283624441207217,
+            "cumulative_return": -0.45609616469127556,
+            "max_drawdown": -0.8314547161901955,
+            "average_drawdown": -0.47412836524837443,
+            "longest_losing_streak": 59,
+            "longest_winning_streak": 22,
+            "average_holding_bars": 5.199661590524535,
+            "max_holding_bars": 23,
+            "total_fees": 1.1820000000000008,
+            "total_slippage": 0.0
+          },
+          "opportunity": {
+            "qualification_rate": 0.8644314868804664,
+            "trigger_rate": 0.8615160349854227,
+            "invalidation_rate": 0.0,
+            "expiry_rate": 0.13556851311953352,
+            "setups_per_bar": 0.03463946677438901,
+            "trades_per_bar": 0.029842456069480914
+          },
+          "by_setup_type": {
+            "PULLBACK": {
+              "trades": 167,
+              "wins": 78,
+              "losses": 89,
+              "win_rate": 0.46706586826347307,
+              "average_return": 0.001045272470667721,
+              "cumulative_return": 0.1290089993368302,
+              "profit_factor": 1.1164701008828952,
+              "expectancy": 0.001045272470667721
+            },
+            "TREND_CONTINUATION": {
+              "trades": 165,
+              "wins": 67,
+              "losses": 98,
+              "win_rate": 0.40606060606060607,
+              "average_return": -0.002225741129058204,
+              "cumulative_return": -0.3428966206055232,
+              "profit_factor": 0.7875336091791185,
+              "expectancy": -0.002225741129058204
+            },
+            "BREAKOUT": {
+              "trades": 132,
+              "wins": 39,
+              "losses": 93,
+              "win_rate": 0.29545454545454547,
+              "average_return": -0.0038759251665820196,
+              "cumulative_return": -0.43186976675145916,
+              "profit_factor": 0.6818843497778209,
+              "expectancy": -0.0038759251665820196
+            },
+            "BREAKOUT_RETEST": {
+              "trades": 127,
+              "wins": 50,
+              "losses": 77,
+              "win_rate": 0.3937007874015748,
+              "average_return": 0.002308238901133431,
+              "cumulative_return": 0.29045574614603553,
+              "profit_factor": 1.3242985305631951,
+              "expectancy": 0.002308238901133431
+            }
+          },
+          "by_timeframe": {
+            "4H": {
+              "trades": 591,
+              "wins": 234,
+              "losses": 357,
+              "win_rate": 0.39593908629441626,
+              "average_return": -0.0006957065401657785,
+              "cumulative_return": -0.45609616469127556,
+              "profit_factor": 0.9283624441207217,
+              "expectancy": -0.0006957065401657785
+            }
+          },
+          "by_regime": {
+            "BULL": {
+              "trades": 504,
+              "wins": 208,
+              "losses": 296,
+              "win_rate": 0.4126984126984127,
+              "average_return": 2.6968084515106752e-05,
+              "cumulative_return": -0.13512412950903463,
+              "profit_factor": 1.0029778636515416,
+              "expectancy": 2.6968084515106752e-05
+            },
+            "BEAR": {
+              "trades": 87,
+              "wins": 26,
+              "losses": 61,
+              "win_rate": 0.2988505747126437,
+              "average_return": -0.004882235400386079,
+              "cumulative_return": -0.371119193093032,
+              "profit_factor": 0.638557928840554,
+              "expectancy": -0.004882235400386079
+            }
+          },
+          "by_score_bucket": {
+            "0-19": {
+              "trades": 367,
+              "wins": 149,
+              "losses": 218,
+              "win_rate": 0.40599455040871935,
+              "average_return": -0.00023740904905050886,
+              "cumulative_return": -0.16299264090394128,
+              "profit_factor": 0.9719127122905545,
+              "expectancy": -0.00023740904905050886
+            },
+            "20-39": {
+              "trades": 224,
+              "wins": 85,
+              "losses": 139,
+              "win_rate": 0.3794642857142857,
+              "average_return": -0.0014465778760555284,
+              "cumulative_return": -0.35018034262431896,
+              "profit_factor": 0.8771390412044011,
+              "expectancy": -0.0014465778760555284
+            }
+          }
+        }
+      },
+      {
+        "label": "OOS",
+        "start_ts": 1731312000,
+        "end_ts": 1788336000,
+        "index": [
+          15843,
+          19804
+        ],
+        "counts": {
+          "trades": 665,
+          "setups": 730,
+          "completed": 663
+        },
+        "metrics": {
+          "trades": {
+            "total_setups": 730,
+            "qualified_setups": 663,
+            "triggered_setups": 665,
+            "completed_trades": 665,
+            "wins": 250,
+            "losses": 415,
+            "breakeven": 0,
+            "win_rate": 0.37593984962406013,
+            "average_win": 0.024359367946500697,
+            "average_loss": -0.01837452106789791,
+            "largest_win": 0.10539015456877136,
+            "largest_loss": -0.09286221287693008,
+            "average_return": -0.0023091492579736224,
+            "median_return": -0.004996197352309736
+          },
+          "risk": {
+            "expectancy": -0.0023091492579736224,
+            "profit_factor": 0.7986231578954257,
+            "cumulative_return": -0.8302818038970652,
+            "max_drawdown": -0.928879260153671,
+            "average_drawdown": -0.7289263375880508,
+            "longest_losing_streak": 32,
+            "longest_winning_streak": 32,
+            "average_holding_bars": 7.464661654135338,
+            "max_holding_bars": 23,
+            "total_fees": 1.330000000000001,
+            "total_slippage": 0.0
+          },
+          "opportunity": {
+            "qualification_rate": 0.9082191780821918,
+            "trigger_rate": 0.910958904109589,
+            "invalidation_rate": 0.0,
+            "expiry_rate": 0.09178082191780822,
+            "setups_per_bar": 0.036861240153504345,
+            "trades_per_bar": 0.0335790749343567
+          },
+          "by_setup_type": {
+            "BREAKOUT": {
+              "trades": 193,
+              "wins": 65,
+              "losses": 128,
+              "win_rate": 0.33678756476683935,
+              "average_return": -0.0045055338239036865,
+              "cumulative_return": -0.6199719073536818,
+              "profit_factor": 0.6829443617723078,
+              "expectancy": -0.0045055338239036865
+            },
+            "BREAKOUT_RETEST": {
+              "trades": 180,
+              "wins": 58,
+              "losses": 122,
+              "win_rate": 0.32222222222222224,
+              "average_return": -0.0016629826937843155,
+              "cumulative_return": -0.29965900869455575,
+              "profit_factor": 0.8343807801765916,
+              "expectancy": -0.0016629826937843155
+            },
+            "TREND_CONTINUATION": {
+              "trades": 135,
+              "wins": 63,
+              "losses": 72,
+              "win_rate": 0.4666666666666667,
+              "average_return": 0.00010901978105816973,
+              "cumulative_return": -0.02219987929116163,
+              "profit_factor": 1.0115868403933053,
+              "expectancy": 0.00010901978105816973
+            },
+            "PULLBACK": {
+              "trades": 157,
+              "wins": 64,
+              "losses": 93,
+              "win_rate": 0.40764331210191085,
+              "average_return": -0.0024292803445905954,
+              "cumulative_return": -0.3478416307267874,
+              "profit_factor": 0.7887237123487875,
+              "expectancy": -0.0024292803445905954
+            }
+          },
+          "by_timeframe": {
+            "4H": {
+              "trades": 665,
+              "wins": 250,
+              "losses": 415,
+              "win_rate": 0.37593984962406013,
+              "average_return": -0.0023091492579736224,
+              "cumulative_return": -0.8302818038970652,
+              "profit_factor": 0.7986231578954257,
+              "expectancy": -0.0023091492579736224
+            }
+          },
+          "by_regime": {
+            "BULL": {
+              "trades": 491,
+              "wins": 184,
+              "losses": 307,
+              "win_rate": 0.37474541751527496,
+              "average_return": -0.003110184401849424,
+              "cumulative_return": -0.8096826452059736,
+              "profit_factor": 0.707930466535824,
+              "expectancy": -0.003110184401849424
+            },
+            "BEAR": {
+              "trades": 174,
+              "wins": 66,
+              "losses": 108,
+              "win_rate": 0.3793103448275862,
+              "average_return": -4.8756984163170344e-05,
+              "cumulative_return": -0.1082358396236931,
+              "profit_factor": 0.9964605098409872,
+              "expectancy": -4.8756984163170344e-05
+            }
+          },
+          "by_score_bucket": {
+            "20-39": {
+              "trades": 276,
+              "wins": 103,
+              "losses": 173,
+              "win_rate": 0.37318840579710144,
+              "average_return": -0.003046203458768311,
+              "cumulative_return": -0.6211137716822439,
+              "profit_factor": 0.7669608923685306,
+              "expectancy": -0.003046203458768311
+            },
+            "0-19": {
+              "trades": 389,
+              "wins": 147,
+              "losses": 242,
+              "win_rate": 0.37789203084832906,
+              "average_return": -0.0017862007761758484,
+              "cumulative_return": -0.5520602665964431,
+              "profit_factor": 0.8270552419884657,
+              "expectancy": -0.0017862007761758484
+            }
+          }
+        }
+      }
+    ]
+  },
+  "calibration": {
+    "buckets": [
+      {
+        "bucket": "0-19",
+        "trades": 1899,
+        "wins": 782,
+        "losses": 1117,
+        "win_rate": 0.41179568193786203,
+        "average_return": 0.0003822945772240365,
+        "cumulative_return": -0.2596959981340874,
+        "profit_factor": 1.0343799524984094,
+        "edge_per_trade_vs_baseline": -0.08820431806213797,
+        "edge_per_trade_vs_fees": -0.08820431806213797,
+        "win_rate_ci_low": 0.3898594231444006,
+        "win_rate_ci_high": 0.4340880877782112
+      },
+      {
+        "bucket": "20-39",
+        "trades": 1236,
+        "wins": 545,
+        "losses": 691,
+        "win_rate": 0.44093851132686085,
+        "average_return": 0.004167589137046706,
+        "cumulative_return": 52.07378905294707,
+        "profit_factor": 1.3302486079379572,
+        "edge_per_trade_vs_baseline": -0.05906148867313915,
+        "edge_per_trade_vs_fees": -0.05906148867313915,
+        "win_rate_ci_low": 0.41348384946822514,
+        "win_rate_ci_high": 0.4687591725436189
+      }
+    ],
+    "overall_win_rate": 0.42328548644338115,
+    "overall_average_return": 0.001874678652484266,
+    "baseline_win_rate": 0.5,
+    "monotonic_win_rate": true,
+    "monotonic_avg_return": true,
+    "kendall_win_rate": 1.0,
+    "kendall_avg_return": 1.0,
+    "score_is_useful": false,
+    "notes": [
+      "score_is_useful is a description of observed discrimination, NOT a claim that the score is a calibrated probability"
+    ]
+  },
+  "card": {
+    "verdict": "MIXED",
+    "gates": [
+      {
+        "gate": "A",
+        "status": "PASS",
+        "detail": "all 4 datasets validated (provenance + quality)"
+      },
+      {
+        "gate": "B",
+        "status": "PASS",
+        "detail": "no lookahead detected"
+      },
+      {
+        "gate": "C",
+        "status": "PASS",
+        "detail": "frozen baseline, no tuning"
+      },
+      {
+        "gate": "D",
+        "status": "WEAK",
+        "detail": "OOS stable win rate 0.37593984962406013 but avg return -0.0023091492579736224 not positive"
+      },
+      {
+        "gate": "E",
+        "status": "PASS",
+        "detail": "n=3135; sample sizes and CI published"
+      },
+      {
+        "gate": "F",
+        "status": "PASS",
+        "detail": "4 datasets provide cross-dataset sensitivity"
+      },
+      {
+        "gate": "G",
+        "status": "FAIL",
+        "detail": "score does not currently discriminate; reported honestly, not overclaimed"
+      }
+    ],
+    "summary": [
+      "A: PASS - all 4 datasets validated (provenance + quality)",
+      "B: PASS - no lookahead detected",
+      "C: PASS - frozen baseline, no tuning",
+      "D: WEAK - OOS stable win rate 0.37593984962406013 but avg return -0.0023091492579736224 not positive",
+      "E: PASS - n=3135; sample sizes and CI published",
+      "F: PASS - 4 datasets provide cross-dataset sensitivity",
+      "G: FAIL - score does not currently discriminate; reported honestly, not overclaimed"
+    ]
+  },
+  "walk_forward": null,
+  "robustness": {
+    "base": {
+      "scenario": "base",
+      "fees_pct": 0.0019999999999998504,
+      "slippage_pct": 0.0,
+      "avg_return": 0.0018746786524844162,
+      "win_rate": 0.42328548644338115,
+      "expectancy": 0.0018746786524844162,
+      "profit_factor": 1.1600780933870718
+    },
+    "scenarios": [
+      {
+        "scenario": "base",
+        "fees_pct": 0.0019999999999998504,
+        "slippage_pct": 0.0,
+        "avg_return": 0.0018746786524844162,
+        "win_rate": 0.42328548644338115,
+        "expectancy": 0.0018746786524844162,
+        "profit_factor": 1.1600780933870718
+      },
+      {
+        "scenario": "cost_x2",
+        "fees_pct": 0.003999999999999701,
+        "slippage_pct": 0.0,
+        "avg_return": -0.0001253213475154341,
+        "win_rate": 0.38692185007974483,
+        "expectancy": -0.0001253213475154341,
+        "profit_factor": 0.9902877890534416
+      },
+      {
+        "scenario": "cost_x1.5",
+        "fees_pct": 0.0029999999999997754,
+        "slippage_pct": 0.0,
+        "avg_return": 0.0008746786524844909,
+        "win_rate": 0.4028708133971292,
+        "expectancy": 0.0008746786524844909,
+        "profit_factor": 1.071122214706876
+      },
+      {
+        "scenario": "cost_half",
+        "fees_pct": 0.0009999999999999252,
+        "slippage_pct": 0.0,
+        "avg_return": 0.002874678652484341,
+        "win_rate": 0.43891547049441787,
+        "expectancy": 0.002874678652484341,
+        "profit_factor": 1.258012371013308
+      },
+      {
+        "scenario": "cost_zero",
+        "fees_pct": 0.0,
+        "slippage_pct": 0.0,
+        "avg_return": 0.003874678652484266,
+        "win_rate": 0.46283891547049444,
+        "expectancy": 0.003874678652484266,
+        "profit_factor": 1.365741320806968
+      }
+    ],
+    "flips_sign": true
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "baseline": {
+    "MOMENTUM": 0.12,
+    "PULLBACK": 0.15,
+    "STRUCTURE": 0.2,
+    "TREND": 0.25,
+    "VOLATILITY": 0.05,
+    "VOLUME": 0.07
+  },
+  "baseline_result": {
+    "test": {
+      "expectancy": 0.015524203614833067,
+      "mean_score": 85.39161462979483,
+      "n_eligible": 1121,
+      "win_rate": 0.5298840321141838
+    },
+    "val": {
+      "expectancy": 0.029025646586377674,
+      "mean_score": 84.32987747408106,
+      "n_eligible": 1061,
+      "win_rate": 0.6720075400565504
+    },
+    "val_ci": {
+      "hi": 0.03367152305690622,
+      "lo": 0.02536987616326559
+    },
+    "weights": {
+      "MOMENTUM": 0.12,
+      "PULLBACK": 0.15,
+      "STRUCTURE": 0.2,
+      "TREND": 0.25,
+      "VOLATILITY": 0.05,
+      "VOLUME": 0.07
+    }
+  },
+  "best": {
+    "test": {
+      "expectancy": 0.0166239835211031,
+      "mean_score": 85.45256166982922,
+      "n_eligible": 1054,
+      "win_rate": 0.538899430740038
+    },
+    "val": {
+      "expectancy": 0.03060038287817451,
+      "mean_score": 84.142,
+      "n_eligible": 1000,
+      "win_rate": 0.691
+    },
+    "val_ci": {
+      "hi": 0.03495720386275568,
+      "lo": 0.027037713708586143
+    },
+    "weights": {
+      "MOMENTUM": 0.07443037974683545,
+      "PULLBACK": 0.15949367088607597,
+      "STRUCTURE": 0.2126582278481013,
+      "TREND": 0.2658227848101266,
+      "VOLATILITY": 0.05316455696202532,
+      "VOLUME": 0.07443037974683546
+    }
+  },
+  "flagged_ci_crosses_zero": 0,
+  "n_candidates": 13,
+  "rows_dumped": 6672
+}
