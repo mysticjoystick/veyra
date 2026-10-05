@@ -303,10 +303,14 @@ def validate_production(settings: Settings) -> None:
         "changeme", "change-me", "password", "secret",
     }:
         problems.append("VEYRA_ADMIN_PASSWORD must be a real (non-placeholder) password")
-    if not settings.telegram_bot_token or settings.telegram_bot_token.strip().lower() in {
-        "changeme", "change-me", "token", "yyyytoken",
-    }:
-        problems.append("VEYRA_TELEGRAM_BOT_TOKEN must be a real bot token")
+    # Telegram is an optional channel (browser + PWA alerts are the default).
+    # The token is required only when Telegram sending is actually enabled.
+    if settings.postback_telegram_enabled and (
+        not settings.telegram_bot_token or settings.telegram_bot_token.strip().lower() in {
+            "changeme", "change-me", "token", "yyyytoken",
+        }
+    ):
+        problems.append("VEYRA_TELEGRAM_BOT_TOKEN must be a real bot token when Telegram sends are enabled")
     if not settings.stars_price_xtr or settings.stars_price_xtr <= 0:
         problems.append("VEYRA_STARS_PRICE_XTR must be a positive number of Stars")
     if settings.telegram_require_subscription and not settings.telegram_chat_id:

@@ -1,0 +1,28 @@
+# Veyra on Render — Docker web service with a persistent disk.
+# Telegram is ON HOLD: no Telegram env vars here; browser + PWA alerts only.
+# NOTE: persistent disks need a paid instance type (Starter or higher).
+# After first deploy, set the two sync:false secrets in the Render dashboard,
+# then SSH/`render shell` once and run `veyra alert` to pre-warm caches
+# (first visitor otherwise pays a ~5s cold history replay).
+services:
+  - type: web
+    name: veyra
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    disk:
+      name: veyra-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: VEYRA_ENVIRONMENT
+        value: prod
+      - key: VEYRA_ADMIN_EMAIL
+        sync: false # set in dashboard: operator login
+      - key: VEYRA_ADMIN_PASSWORD
+        sync: false # set in dashboard: real non-placeholder password (required)
+      # Telegram held — leave unset. Only add when enabling sends:
+      # - key: VEYRA_TELEGRAM_BOT_TOKEN
+      #   sync: false
+      # - key: VEYRA_TELEGRAM_CHAT_ID
+      #   sync: false

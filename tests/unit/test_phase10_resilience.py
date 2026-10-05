@@ -38,13 +38,24 @@ def test_prod_rejects_placeholder_password(monkeypatch):
         validate_production(Settings())
 
 
-def test_prod_rejects_missing_bot_token(monkeypatch):
+def test_prod_rejects_missing_bot_token_when_telegram_enabled(monkeypatch):
     _apply_env(monkeypatch,
                VEYRA_ENVIRONMENT="prod", VEYRA_ADMIN_EMAIL="a@b.co",
                VEYRA_ADMIN_PASSWORD="reals3cret",
+               VEYRA_POSTBACK_TELEGRAM_ENABLED="true",
                VEYRA_TELEGRAM_BOT_TOKEN="")
     with pytest.raises(RuntimeError):
         validate_production(Settings())
+
+
+def test_prod_boots_without_telegram_when_sends_off(monkeypatch):
+    # Telegram on hold: browser + PWA alerts only, no token required.
+    _apply_env(monkeypatch,
+               VEYRA_ENVIRONMENT="prod", VEYRA_ADMIN_EMAIL="a@b.co",
+               VEYRA_ADMIN_PASSWORD="reals3cret",
+               VEYRA_POSTBACK_TELEGRAM_ENABLED="false",
+               VEYRA_TELEGRAM_BOT_TOKEN="")
+    validate_production(Settings())  # no raise
 
 
 def test_prod_accepts_real_secrets(monkeypatch):
