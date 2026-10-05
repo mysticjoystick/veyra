@@ -654,6 +654,42 @@ class LivePaperEngine:
             elig = evaluate_eligibility(int(s.get("overall_score") or 0), st)
             if not elig["trade_eligible"]:
                 continue
+            # Quantified decision gate (shared with alerts/dashboard): the
+            # posterior alone can pass on tiny samples when risk is None, so
+            # require the full TRADE verdict — sample floor, raw edge, R:R >=
+            # 1.0, efficiency confirmation, no live contradiction. Anything
+            # else is monitored, never paper-traded.
+            try:
+                from ..decision import decide as _decide
+                from ..efficiency import efficiency_score as _eff_score
+
+                _live_rets = [
+                    t.net_return for t in ledger.trades
+                    if getattr(t, "net_return", None) is not None
+                ]
+                _proj = None
+                if st is not None:
+                    _proj = {
+                        "n": getattr(st, "n", 0),
+                        "win_rate": getattr(st, "win_rate", None),
+                        "mean_return": getattr(st, "mean_return", None),
+                        "risk": getattr(st, "risk", None),
+                    }
+                _eff = _eff_score(_proj, _live_rets)
+                _dec = _decide(
+                    int(s.get("overall_score") or 0), st, _eff,
+                    setup=s, live_returns=_live_rets,
+                )
+                if _dec.get("verdict") != "TRADE":
+                    logger.info(
+                        "decision-gate rejected %s %s %s: %s (%s)",
+                        symbol, timeframe, s.get("side") or "LONG",
+                        _dec.get("verdict"), "; ".join(_dec.get("reasons") or []),
+                    )
+                    continue
+            except Exception as exc:  # noqa: BLE001 - gate must never crash paper
+                logger.warning("decision gate unavailable: %s", exc)
+                continue
             entry_ts = int(s.get("timestamp") or now)
             entry_price = _next_open_or_area(s, model)
             if entry_price is None or entry_price <= 0:

@@ -2,7 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04050b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Veyra">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <title>{{ title }}</title>
 <style>
   :root {
@@ -667,6 +675,92 @@
 
   .refresh-hint { color: var(--muted); font-size: 12px; letter-spacing: .04em; text-align: right; margin: -6px 0 0; }
   .badge { text-transform: uppercase; }
+
+  /* ---- Skeleton shimmer (shell-first paint) ---- */
+  .skel { position: relative; overflow: hidden; background: rgba(255,255,255,.04); border-radius: 10px; min-height: 18px; }
+  .skel::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(43,224,255,.12), transparent); animation: skelShimmer 1.4s infinite; }
+  @keyframes skelShimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+  /* ---- Mobile-first responsive (phones <720px, small <480px) ---- */
+  img, svg, canvas { max-width: 100%; }
+  .nav a.navlink, button, select, input { min-height: 32px; }
+  @media (max-width: 900px) {
+    .frame { padding: 14px 14px 90px; }
+    .hero { padding: 20px 18px; }
+    .hero-title { font-size: 26px; }
+    .rank-row { grid-template-columns: 26px 1fr 92px; row-gap: 8px; }
+    .rank-row .rank-spark { display: none; }
+    .rank-row .rank-stat:nth-of-type(n+3) { display: none; }
+    .pipe-rail { flex-direction: column; }
+    .pipe-step { min-width: 0; border-left: 0; border-top: 1px solid rgba(255,255,255,.07); padding: 10px 2px; }
+    .pipe-step:first-child { border-top: 0; }
+    .chart-canvas { height: 240px; }
+    .summary, .pipe-kpis { grid-template-columns: repeat(2, 1fr); }
+    .scanner-grid, .grid-live { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    :root { font-size: 15px; }
+    .frame { padding: 10px 10px 110px; }
+    header { gap: 10px; }
+    .brand h1 { font-size: 18px; }
+    .clock { display: none; }
+    .hero-title { font-size: 22px; line-height: 1.15; }
+    .hero-sub { font-size: 13px; }
+    .summary, .pipe-kpis { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat .num, .pipe-kpi .num { font-size: 22px; }
+    .card { flex-direction: column; gap: 10px; }
+    .badge, .res { min-width: 0; align-self: flex-start; }
+    .chart-top { gap: 8px; }
+    .chart-select select { max-width: 130px; }
+    .modal-card { margin: 12px; max-width: calc(100vw - 24px); }
+    .closed-table { font-size: 12px; }
+    /* Bottom tab bar: thumb-reachable primary nav on phones */
+    .nav { position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); top: auto; z-index: 100;
+      justify-content: space-around; padding: 8px 6px; border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.55); }
+    .nav .nav-title, .nav .nav-sim { display: none; }
+    .nav a.navlink { font-size: 11px; padding: 10px 9px; min-height: 44px; display: inline-flex; align-items: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live-card::after, .scanner-panel::before, .live-beacon .dot, .hero-dot { animation: none; }
+    .pipe-flash { animation: none; }
+  }
+
+  /* ---- Notifications + PWA install ---- */
+  .icon-btn { position: relative; background: rgba(255,255,255,.04); color: var(--text); border: 1px solid var(--line-bright);
+    border-radius: 10px; padding: 7px 11px; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 36px; }
+  .icon-btn:hover { border-color: var(--cyan); }
+  #installBtn { border-color: rgba(43,236,255,.5); color: var(--cyan); }
+  .notify-count { position: absolute; top: -7px; right: -7px; min-width: 19px; height: 19px; border-radius: 999px;
+    background: var(--bad); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; padding: 0 5px; }
+  .notify-panel { position: relative; z-index: 120; border: 1px solid var(--line-bright); border-radius: 16px;
+    background: linear-gradient(135deg, rgba(22,28,40,.92), rgba(12,16,26,.96)); box-shadow: var(--shadow);
+    padding: 14px 16px; margin: 12px 0; backdrop-filter: blur(10px); }
+  .notify-panel[hidden] { display: none; }
+  .notify-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .notify-sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; max-width: 640px; }
+  .notify-row { margin-bottom: 10px; }
+  .notify-cta { background: linear-gradient(135deg, rgba(43,236,255,.9), rgba(207,123,255,.9)); border: none; color: #04050b;
+    font-weight: 800; border-radius: 10px; padding: 9px 14px; cursor: pointer; min-height: 40px; }
+  .notify-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); margin: 6px 0; cursor: pointer; }
+  .notify-toggle input { width: 18px; height: 18px; }
+  .notify-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; max-height: 300px; overflow: auto; }
+  .notify-item { border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; font-size: 12.5px; background: rgba(255,255,255,.02); }
+  .notify-item .t { color: var(--muted); font-size: 11px; }
+  .notify-item.win { border-color: rgba(62,230,155,.5); }
+  .notify-item.loss { border-color: rgba(255,94,128,.5); }
+  .toast-stack { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 300;
+    display: flex; flex-direction: column; gap: 8px; max-width: min(360px, calc(100vw - 28px)); }
+  .toast { border: 1px solid var(--line-bright); border-radius: 14px; padding: 11px 14px; font-size: 13px;
+    background: linear-gradient(135deg, rgba(22,28,40,.96), rgba(12,16,26,.97)); box-shadow: var(--shadow);
+    animation: pipeIn .35s cubic-bezier(.2,.7,.2,1); cursor: pointer; }
+  .toast b { color: #fff; }
+  .toast .sub { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  @media (max-width: 480px) {
+    .head-right { gap: 8px; }
+    .icon-btn { padding: 9px 10px; min-height: 44px; }
+    .toast-stack { left: 10px; right: 10px; max-width: none; }
+  }
 </style>
 </head>
 <body>
@@ -683,9 +777,20 @@
     </div>
     <div class="head-right">
       <span class="clock" id="clock"></span>
+      <button id="installBtn" class="icon-btn" hidden title="Install Veyra app">⤓ Install</button>
+      <button id="notifyBell" class="icon-btn" title="Setup & settle alerts" aria-label="Notifications">🔔<span id="notifyCount" class="notify-count" hidden>0</span></button>
       <span class="live-beacon"><span class="dot"></span>LIVE</span>
     </div>
   </header>
+  <div id="notifyPanel" class="notify-panel" hidden>
+    <div class="notify-head"><b>Alerts on this device</b><button id="notifyClose" class="icon-btn" aria-label="Close">✕</button></div>
+    <div class="notify-sub">Notifies when a setup forms and when it settles — even with this tab in the background. Nothing leaves your device.</div>
+    <div class="notify-row"><button id="notifyEnable" class="notify-cta">Enable notifications</button></div>
+    <label class="notify-toggle"><input type="checkbox" id="prefSetups" checked> New setup forms</label>
+    <label class="notify-toggle"><input type="checkbox" id="prefSettles" checked> Trade settles (win/loss)</label>
+    <div id="notifyList" class="notify-list"><div class="empty">No alerts yet — you'll be notified here the moment a setup forms or settles.</div></div>
+  </div>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
 
   <nav class="nav" id="mainNav">
     <span class="nav-title">COMMAND CENTER</span>
@@ -964,7 +1069,7 @@
   <div class="tabpage" id="tab-alerts">
     <div class="paper-live">
       <div class="head"><span class="badge">ALERT DELIVERY</span><span class="lbl">Live status</span></div>
-      <div class="sub">Telegram alerts fire only when a setup's lifecycle state actually changes on live candles — never on historical replay. This panel shows the honest delivery state: what is configured, what is gated, and what the runner has actually sent.</div>
+      <div class="sub">Telegram alerts fire only when a setup's lifecycle state actually changes on live candles — never on historical replay. This panel shows the honest delivery state: what is configured, what is gated, and what the runner has actually sent. For push on this device, use the 🔔 bell in the header — it notifies when a setup forms and when it settles, even with the tab in the background.</div>
       <div id="alertsBody">
         <p style="color:var(--muted);font-size:12px">Loading delivery status…</p>
       </div>
@@ -989,21 +1094,251 @@
 <footer>Veyra alerts are signals only — they never place orders or contact an exchange.</footer>
 
 <script>
-  // Phase 6 command-center tab switching.
+  // Phase 6 command-center tab switching + lazy-load coordination.
+  // Only the visible tab fetches: background tabs skip their polls so a phone
+  // pays for 1 payload (dashboard) instead of 7 parallel ones on every tick.
   (function () {
     const links = Array.from(document.querySelectorAll('#mainNav a.navlink'));
     const pages = document.querySelectorAll('.tabpage');
     function activate(name) {
       links.forEach(l => l.classList.toggle('active', l.dataset.tab === name));
       pages.forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+      window.__veyraTab = name;
+      try { document.dispatchEvent(new CustomEvent('veyra:tab', { detail: name })); } catch (e) {}
+      // Lazy-hydrate the newly visible tab on next frame (no-op if already loaded).
+      try { if (window.__veyraTabLoad) window.__veyraTabLoad(name); } catch (e) {}
     }
-    links.forEach(l => l.addEventListener('click', e => { e.preventDefault(); activate(l.dataset.tab); }));
+    window.__veyraTab = 'dashboard';
+    window.__veyraVisible = function (tab) { return (window.__veyraTab || 'dashboard') === tab; };
+    links.forEach(l => l.addEventListener('click', e => { e.preventDefault(); location.hash = l.dataset.tab; activate(l.dataset.tab); }));
     const initial = (location.hash || '').replace('#', '');
     activate(['dashboard','scanner','setups','history','analyst','alerts','settings'].includes(initial) ? initial : 'dashboard');
     window.addEventListener('hashchange', () => {
       const h = (location.hash || '').replace('#', '');
       activate(['dashboard','scanner','setups','history','analyst','alerts','settings'].includes(h) ? h : 'dashboard');
     });
+  })();
+</script>
+<script>
+  // Shared lifecycle cache: one /api/lifecycle fetch serves pipeline, scanner,
+  // setups, history. Dedupes 4 parallel identical polls into 1 (45s TTL).
+  window.VeyraData = (function () {
+    let _cache = null, _ts = 0, _inflight = null;
+    const TTL = 45000;
+    async function getLifecycle(force) {
+      const now = Date.now();
+      if (!force && _cache && now - _ts < TTL) return _cache;
+      if (_inflight) return _inflight;
+      _inflight = fetch('/api/lifecycle', { headers: { 'Accept': 'application/json' } })
+        .then(r => r.json()).then(j => { _cache = j; _ts = Date.now(); _inflight = null; return j; })
+        .catch(e => { _inflight = null; throw e; });
+      return _inflight;
+    }
+    function isMobileCore() { return window.matchMedia && window.matchMedia('(max-width: 720px)').matches; }
+    return { getLifecycle: getLifecycle, isMobileCore: isMobileCore };
+  })();
+</script>
+<script>
+  // PWA install: register SW + surface Chrome's Install prompt as a button.
+  // Chrome path the user asked about: browser menu -> "Install app" works once
+  // the manifest + icons + SW are served (all public, no login needed).
+  (function pwa() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+    let deferred = null;
+    const btn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault(); deferred = e;
+      if (btn) btn.hidden = false;
+    });
+    if (btn) btn.addEventListener('click', function () {
+      if (!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function () { deferred = null; btn.hidden = true; }).catch(function () {});
+    });
+    window.addEventListener('appinstalled', function () { if (btn) btn.hidden = true; });
+    // iOS Safari has no beforeinstallprompt: hint Share -> Add to Home Screen.
+    try {
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      const standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+      if (isIOS && !standalone && btn) { btn.hidden = false; btn.textContent = '⤓ Add to Home Screen'; btn.title = 'Share > Add to Home Screen'; }
+    } catch (e) {}
+  })();
+</script>
+<script>
+  // VeyraNotify: browser + in-app alerts when a setup forms and when it settles.
+  // No server push needed: diffs the shared /api/lifecycle payload (one fetch per
+  // minute, shared cache) against what this device already saw (localStorage).
+  // Works with the tab in the background; in the installed app it feels native.
+  window.VeyraNotify = (function () {
+    const LS_SEEN_SETUP = 'veyra.seenSetups.v1';
+    const LS_SEEN_SETTLE = 'veyra.seenSettles.v1';
+    const LS_FEED = 'veyra.notifyFeed.v1';
+    const LS_PREF = 'veyra.notifyPref.v1';
+    const read = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? fb : v; } catch (e) { return fb; } };
+    const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+    let seenSetups = new Set(read(LS_SEEN_SETUP, []));
+    let seenSettles = new Set(read(LS_SEEN_SETTLE, []));
+    let feed = read(LS_FEED, []);
+    let prefs = Object.assign({ setups: true, settles: true }, read(LS_PREF, {}));
+    let seeded = seenSetups.size > 0 || seenSettles.size > 0;
+    let unread = 0;
+
+    const bell = () => document.getElementById('notifyBell');
+    const countEl = () => document.getElementById('notifyCount');
+    const panel = () => document.getElementById('notifyPanel');
+    const listEl = () => document.getElementById('notifyList');
+
+    function persist() {
+      write(LS_SEEN_SETUP, Array.from(seenSetups).slice(-300));
+      write(LS_SEEN_SETTLE, Array.from(seenSettles).slice(-300));
+      write(LS_FEED, feed.slice(0, 30));
+      write(LS_PREF, prefs);
+    }
+    function renderBadge() {
+      const c = countEl(); if (!c) return;
+      c.hidden = unread <= 0; c.textContent = unread > 99 ? '99+' : String(unread);
+    }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function fmtTime() { try { return new Date().toLocaleString(); } catch (e) { return ''; } }
+
+    function renderFeed() {
+      const el = listEl(); if (!el) return;
+      if (!feed.length) { el.innerHTML = '<div class="empty">No alerts yet — you will be notified here the moment a setup forms or settles.</div>'; return; }
+      el.innerHTML = feed.map((n) =>
+        '<div class="notify-item ' + (n.tone || '') + '"><div><b>' + esc(n.title) + '</b></div>' +
+        '<div>' + esc(n.body) + '</div><div class="t">' + esc(n.at) + '</div></div>'
+      ).join('');
+    }
+
+    function toast(title, body, tone) {
+      const stack = document.getElementById('toastStack'); if (!stack) return;
+      const d = document.createElement('div');
+      d.className = 'toast';
+      d.innerHTML = '<div><b>' + esc(title) + '</b></div><div class="sub">' + esc(body) + '</div>';
+      d.addEventListener('click', () => { location.hash = 'dashboard'; d.remove(); try { window.focus(); } catch (e) {} });
+      stack.appendChild(d);
+      while (stack.children.length > 4) stack.firstChild.remove();
+      setTimeout(() => { try { d.remove(); } catch (e) {} }, 12000);
+    }
+
+    function pushFeed(title, body, tone) {
+      feed.unshift({ title, body, tone: tone || '', at: fmtTime() });
+      feed = feed.slice(0, 30);
+      unread++; renderBadge(); renderFeed(); persist();
+    }
+
+    function browserNotify(title, body, tag) {
+      try {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        const n = new Notification(title, { body, icon: '/icons/icon-192.png', badge: '/icons/icon-192.png', tag });
+        n.onclick = function () { try { window.focus(); } catch (e) {} location.hash = 'dashboard'; n.close(); };
+      } catch (e) {}
+    }
+
+    function setupKey(m, s) { return 'setup|' + m.symbol + '|' + m.timeframe + '|' + (s.setup_type || '') + '|' + (s.side || ''); }
+    function settleKey(t, mkt) {
+      return 'settle|' + (t.symbol || mkt || '') + '|' + (t.timeframe || '') + '|' + (t.exit_ts || '') + '|' + (t.side || '') + '|' + (t.exit_price || '');
+    }
+
+    function check(payload) {
+      if (!payload || !payload.markets) return [];
+      const events = [];
+      // 1) New setups forming on the live tail.
+      if (prefs.setups) {
+        payload.markets.forEach((m) => {
+          (m.setups || []).forEach((s) => {
+            const k = setupKey(m, s);
+            if (!seenSetups.has(k)) {
+              seenSetups.add(k);
+              if (seeded) events.push({ kind: 'setup', title: 'Setup forming: ' + m.symbol + ' ' + m.timeframe,
+                body: (s.side || '') + ' ' + (s.setup_type || '') + ' · score ' + (s.overall_score || '?') + '/100', tone: '' });
+            }
+          });
+        });
+      } else {
+        payload.markets.forEach((m) => (m.setups || []).forEach((s) => seenSetups.add(setupKey(m, s))));
+      }
+      // 2) Newly settled trades (solved: win or loss with real P&L).
+      if (prefs.settles) {
+        payload.markets.forEach((m) => {
+          (m.closed_trades || []).forEach((t) => {
+            const k = settleKey(t, m.symbol + ' ' + m.timeframe);
+            if (!seenSettles.has(k)) {
+              seenSettles.add(k);
+              if (seeded) {
+                const pnl = t.pnl != null ? (Number(t.pnl) >= 0 ? '+' : '') + Number(t.pnl).toFixed(2) + '$' : '';
+                const won = Number(t.pnl) >= 0;
+                events.push({ kind: 'settle', title: 'Settled ' + (won ? 'WIN' : 'LOSS') + ': ' + (t.symbol || m.symbol) + ' ' + (t.timeframe || m.timeframe),
+                  body: (t.side || '') + ' · ' + pnl + ' · ' + (t.exit_reason || 'closed'), tone: won ? 'win' : 'loss' });
+              }
+            }
+          });
+        });
+      } else {
+        payload.markets.forEach((m) => (m.closed_trades || []).forEach((t) => seenSettles.add(settleKey(t, m.symbol))));
+      }
+      if (!seeded) { seeded = true; persist(); return []; } // first run seeds silently
+      events.forEach((e) => { pushFeed(e.title, e.body, e.tone); toast(e.title, e.body); browserNotify(e.title, e.body, e.kind + '|' + Date.now()); });
+      if (events.length) persist();
+      // Prune setups that vanished so a re-forming setup alerts again later.
+      try {
+        const live = new Set();
+        payload.markets.forEach((m) => (m.setups || []).forEach((s) => live.add(setupKey(m, s))));
+        let changed = false;
+        Array.from(seenSetups).forEach((k) => { if (!live.has(k)) { seenSetups.delete(k); changed = true; } });
+        if (changed) persist();
+      } catch (e) {}
+      return events;
+    }
+
+    async function poll() {
+      try {
+        const j = await window.VeyraData.getLifecycle(true);
+        check(j);
+      } catch (e) {}
+    }
+
+    function syncPrefUI() {
+      const a = document.getElementById('prefSetups'), b = document.getElementById('prefSettles');
+      if (a) a.checked = !!prefs.setups;
+      if (b) b.checked = !!prefs.settles;
+      const en = document.getElementById('notifyEnable');
+      if (en) {
+        try {
+          const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+          en.textContent = perm === 'granted' ? 'Notifications on ✓' : (perm === 'denied' ? 'Blocked — allow in browser site settings' : 'Enable notifications');
+          en.disabled = perm === 'granted' || perm === 'denied';
+        } catch (e) {}
+      }
+    }
+
+    function init() {
+      renderBadge(); renderFeed(); syncPrefUI();
+      const b = bell(), p = panel();
+      if (b && p) b.addEventListener('click', () => { p.hidden = !p.hidden; if (!p.hidden) { unread = 0; renderBadge(); } });
+      const c = document.getElementById('notifyClose');
+      if (c && p) c.addEventListener('click', () => { p.hidden = true; });
+      const en = document.getElementById('notifyEnable');
+      if (en) en.addEventListener('click', async () => {
+        try {
+          if (!('Notification' in window)) { en.textContent = 'Not supported in this browser'; return; }
+          const r = await Notification.requestPermission();
+          syncPrefUI();
+          if (r === 'granted') { pushFeed('Notifications on', 'You will be alerted when a setup forms or settles.', ''); toast('Notifications on', 'Setup + settle alerts enabled on this device.'); }
+        } catch (e) {}
+      });
+      const a = document.getElementById('prefSetups'), s = document.getElementById('prefSettles');
+      if (a) a.addEventListener('change', () => { prefs.setups = a.checked; persist(); });
+      if (s) s.addEventListener('change', () => { prefs.settles = s.checked; persist(); });
+      poll();
+      setInterval(poll, 60000); // same cadence as dashboard; shared cache = 1 fetch
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'alerts') { renderFeed(); syncPrefUI(); } }); } catch (e) {}
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+    return { check, poll };
   })();
 </script>
 
@@ -1095,6 +1430,8 @@
     });
 
     const refresh = async () => {
+      // Lazy: scanner lives on Dashboard tab only; skip when hidden/background.
+      try { if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('dashboard'))) return; } catch (e) {}
       const amt = (globalAmt && parseFloat(globalAmt.value)) || 1000;
       try {
         const res = await fetch('/api/portfolio?amount=' + encodeURIComponent(amt), { headers: { 'Accept': 'application/json' } });
@@ -1309,13 +1646,41 @@
     // local per-second tick for chart bar countdown
     setInterval(() => {
       if (chartLeft == null || !countEl) return;
+      try { if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('dashboard'))) return; } catch (e) {}
       const s = Math.max(0, chartLeft);
       const hh = Math.floor(s / 3600), mm = Math.floor((s % 3600) / 60), ss = s % 60;
       countEl.textContent = (hh ? hh + 'h ' : '') + mm + 'm ' + ss + 's';
       if (chartLeft > 0) chartLeft--;
     }, 1000);
 
-    connect();
+    // Lazy chart: only open WS/fetch when chart is visible + Dashboard tab active.
+    // Saves mobile radio + avoids WS storm on background tabs.
+    (function lazyChart() {
+      const canvas = document.getElementById('chartCanvas');
+      let started = false;
+      const maybeStart = () => {
+        try { if (window.__veyraVisible && !window.__veyraVisible('dashboard')) return; } catch (e) {}
+        if (started) return; started = true;
+        fetchChart(); connect();
+      };
+      const stopForHidden = () => {
+        try { if (window.__veyraVisible && !window.__veyraVisible('dashboard')) {
+          if (ws) { try { ws.close(); } catch (e) {} ws = null; }
+          if (restTimer) { clearInterval(restTimer); restTimer = null; }
+          started = false; return;
+        } } catch (e) {}
+        maybeStart();
+      };
+      try { document.addEventListener('veyra:tab', stopForHidden); } catch (e) {}
+      if ('IntersectionObserver' in window && canvas) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(en => { if (en.isIntersecting) maybeStart(); });
+        }, { rootMargin: '200px' });
+        io.observe(canvas);
+      } else { maybeStart(); }
+      // Fallback: still paint once after 1.5s if observer never fires.
+      setTimeout(maybeStart, 1500);
+    })();
   })();
 
   // Phase 6+: SCANNER / SETUPS / HISTORY / ANALYST / ALERTS / SETTINGS tabs,
@@ -1357,13 +1722,15 @@
       };
       const load = async () => {
         try {
-          const res = await fetch('/api/lifecycle', { headers: { 'Accept': 'application/json' } });
-          const j = await res.json();
+          if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('scanner'))) return;
+          const j = await window.VeyraData.getLifecycle();
           render((j && j.markets) || []);
         } catch (e) { grid.innerHTML = '<p style="color:var(--bad);font-size:12px">scanner unavailable</p>'; }
       };
-      load();
-      setInterval(load, 15000);
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'scanner') load(); }); } catch (e) {}
+      // Lazy: don't fetch until Scanner tab is opened.
+      if (window.__veyraVisible && window.__veyraVisible('scanner')) load();
+      setInterval(load, 60000);
     }
 
     const modal = document.getElementById('setupModal');
@@ -1390,7 +1757,8 @@
       }
       const load = async () => {
         try {
-          const lc = await (await fetch('/api/lifecycle', { headers: { 'Accept': 'application/json' } })).json();
+          if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('setups'))) return;
+          const lc = await window.VeyraData.getLifecycle();
           const liveCount = (lc.markets || []).filter(m => (m.setups || []).length).length;
           let all = [];
           (lc.markets || []).forEach(m => (m.setups || []).forEach(a => {
@@ -1419,8 +1787,9 @@
           });
         } catch (e) { setups.innerHTML = '<p style="color:var(--bad);font-size:12px">setups unavailable</p>'; }
       };
-      load();
-      setInterval(load, 30000);
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'setups') load(); }); } catch (e) {}
+      if (window.__veyraVisible && window.__veyraVisible('setups')) load();
+      setInterval(load, 60000);
     }
     if (modal && modalBody && document.getElementById('modalClose')) {
       document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('open'));
@@ -1432,8 +1801,8 @@
     if (history) {
       const load = async () => {
         try {
-          const res = await fetch('/api/lifecycle', { headers: { 'Accept': 'application/json' } });
-          const j = await res.json();
+          if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('history'))) return;
+          const j = await window.VeyraData.getLifecycle();
           const stats = (j && j.stats) || {};
           const mkts = (j && j.markets) || [];
           const allClosed = [];
@@ -1532,8 +1901,9 @@
           history.innerHTML = h;
         } catch (e) { history.innerHTML = '<p style="color:var(--bad);font-size:12px">history unavailable</p>'; }
       };
-      load();
-      setInterval(load, 15000);
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'history') load(); }); } catch (e) {}
+      if (window.__veyraVisible && window.__veyraVisible('history')) load();
+      setInterval(load, 60000);
     }
 
     // ANALYST — readable explanation derived only from engine fields.
@@ -1541,6 +1911,7 @@
     if (analyst) {
       const load = async () => {
         try {
+          if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('analyst'))) return;
           const res = await fetch('/api/alerts', { headers: { 'Accept': 'application/json' } });
           const j = await res.json();
           const datasets = (j && j.datasets) || [];
@@ -1565,7 +1936,8 @@
             '<div class="m-sub" style="color:var(--muted)">Signals only — this reading is a notice, not an order.</div></div>';
         } catch (e) { analyst.innerHTML = '<p style="color:var(--bad);font-size:12px">analyst unavailable</p>'; }
       };
-      load();
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'analyst') load(); }); } catch (e) {}
+      if (window.__veyraVisible && window.__veyraVisible('analyst')) load();
       setInterval(load, 120000);
     }
 
@@ -1573,8 +1945,9 @@
     if (alertsBody) {
       const load = async () => {
         try {
+          if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('alerts'))) return;
           const runner = await (await fetch('/api/runner', { headers: { 'Accept': 'application/json' } })).json();
-          const lc = await (await fetch('/api/lifecycle', { headers: { 'Accept': 'application/json' } })).json();
+          const lc = await window.VeyraData.getLifecycle();
           const pub = (lc && lc.published) || {};
           const rows = (runner.markets || []).map(m => {
             const key = m.symbol + '|' + m.timeframe;
@@ -1602,14 +1975,16 @@
             '</div></div>';
         } catch (e) { alertsBody.innerHTML = '<p style="color:var(--bad);font-size:12px">alerts status unavailable</p>'; }
       };
-      load();
-      setInterval(load, 15000);
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'alerts') load(); }); } catch (e) {}
+      if (window.__veyraVisible && window.__veyraVisible('alerts')) load();
+      setInterval(load, 60000);
     }
 
     // SETTINGS — safe, read-only runtime configuration (no secrets).
     if (settingsBody) {
       const load = async () => {
         try {
+          if (document.hidden || (window.__veyraVisible && !window.__veyraVisible('settings'))) return;
           const s = await (await fetch('/api/settings', { headers: { 'Accept': 'application/json' } })).json();
           const b = s.boundaries || {};
           const row = (k, v) => '<div class="row"><span class="mk">' + k + '</span><span class="hi">' + v + '</span></div>';
@@ -1631,9 +2006,16 @@
             '<div class="m-sub" style="margin-top:10px;color:var(--muted)">Telegram is a paid feature gated by subscription; billing provisioning is manual until Phase 10.</div></div>';
         } catch (e) { settingsBody.innerHTML = '<p style="color:var(--bad);font-size:12px">settings unavailable</p>'; }
       };
-      load();
-      setInterval(load, 30000);
+      try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'settings') load(); }); } catch (e) {}
+      if (window.__veyraVisible && window.__veyraVisible('settings')) load();
+      setInterval(load, 60000);
     }
+    // Expose lazy loader for tab activation (used by nav handler above).
+    window.__veyraTabLoad = function (name) {
+      try {
+        if (name === 'scanner' || name === 'setups' || name === 'history') window.VeyraData.getLifecycle(true).catch(function(){});
+      } catch (e) {}
+    };
   })();
 
   /* --- Trade pipeline (lifecycle) ---------------------------------------- */
@@ -1893,14 +2275,17 @@
       svg.innerHTML = '<line class="eq-zero" x1="' + padL + '" y1="' + zeroY.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + zeroY.toFixed(1) + '"/>' + fill + line + dots;
     }
 
-    const poll = async () => {
+    const poll = async (force) => {
       try {
-        const r = await fetch('/api/lifecycle', { headers: { 'Accept': 'application/json' } });
-        if (r.ok) render(await r.json());
+        if (!force && document.hidden) return;
+        if (!force && window.__veyraVisible && !window.__veyraVisible('dashboard')) return;
+        const j = await window.VeyraData.getLifecycle(force);
+        render(j);
       } catch (e) { /* keep last render */ }
     };
-    poll();
-    setInterval(poll, 15000);
+    poll(true);
+    try { document.addEventListener('veyra:tab', (e) => { if (e.detail === 'dashboard') poll(true); }); } catch (e) {}
+    setInterval(poll, 60000);
 
     setInterval(() => {
       document.querySelectorAll('#pipeMarkets [data-countdown]').forEach(el => {

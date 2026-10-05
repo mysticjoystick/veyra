@@ -203,21 +203,29 @@ class NotifyClerk:
                     continue
                 if not self._passes_filters(state, score):
                     continue
-                emitted.append(self._live_row(sym, tf, a, state))
+                emitted.append(self._live_row(sym, tf, a, state, market=m))
         self._save()
         return emitted
 
     @staticmethod
-    def _live_row(sym: str, tf: str, a: dict, state: str) -> dict:
+    def _live_row(sym: str, tf: str, a: dict, state: str, market: dict | None = None) -> dict:
         zone = a.get("interest_area") or {}
         low = zone.get("low") if isinstance(zone, dict) else None
         high = zone.get("high") if isinstance(zone, dict) else None
+        ts = a.get("timestamp")
+        # Stable pairing ID for LIVE SETUP -> SETUP CLOSED matching.
+        # Dedupe key stays type|side (no spam); this ID is display-only.
+        setup_type = str(a.get("setup_type", "?"))
+        side = str(a.get("side", "?"))
+        alert_id = f"{str(sym).replace('/', '')}-{tf}-{setup_type}-{side}-{ts or 'live'}"
+        mkt = market or {}
         return {
             "symbol": sym,
             "timeframe": tf,
-            "setup_key": f"{a.get('setup_type','?')}|{a.get('side','?')}",
-            "setup_type": a.get("setup_type", ""),
-            "side": a.get("side", ""),
+            "setup_key": f"{setup_type}|{side}",
+            "alert_id": alert_id,
+            "setup_type": setup_type,
+            "side": side,
             "level": "",
             "score": int(a.get("overall_score") or 0),
             "state": state,
@@ -225,6 +233,10 @@ class NotifyClerk:
             "interest_area_high": high,
             "invalidation": a.get("invalidation") or "n/a",
             "reasoning": a.get("reasoning") or a.get("setup_type") or "",
+            "timestamp": ts,
+            "atr": a.get("atr"),
+            "regime": a.get("regime") or mkt.get("regime") or "",
+            "live_price": mkt.get("live_price"),
         }
 
     @staticmethod
@@ -232,10 +244,12 @@ class NotifyClerk:
         zone = a.get("interest_area_low"), a.get("interest_area_high")
         invalidation = a.get("invalidation") or "n/a"
         reason = (a.get("reasoning") or a.get("setup_type") or "").strip()
+        key = str(a.get("setup_key", a.get("alert_id", "")))
         return {
             "symbol": sym,
             "timeframe": tf,
-            "setup_key": a.get("setup_key", a.get("alert_id", "")),
+            "setup_key": key,
+            "alert_id": str(a.get("alert_id") or key or f"{sym}-{tf}-{state}"),
             "setup_type": a.get("setup_type", ""),
             "side": a.get("side", ""),
             "level": a.get("level", ""),
@@ -245,13 +259,30 @@ class NotifyClerk:
             "interest_area_high": zone[1],
             "invalidation": invalidation,
             "reasoning": reason,
+            "timestamp": a.get("timestamp"),
+            "atr": a.get("atr"),
+            "regime": a.get("regime") or "",
+            "live_price": a.get("live_price"),
         }
+
+
+def _parse_float(value) -> float | None:
+    """Best-effort float parse for invalidation levels (None when text)."""
+    try:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return None
+        return float(str(value).replace(",", "").replace("$", ""))
+    except (TypeError, ValueError):
+        return None
 
 
 def render_message(row: dict, projection: Optional[dict] = None,
                    amount: Optional[float] = None,
                    timeframe: Optional[str] = None,
-                   efficiency: Optional[dict] = None) -> str:
+                   efficiency: Optional[dict] = None,
+                   track_url: Optional[str] = None,
+                   risk_usd: float = 10.0,
+                   decision: Optional[dict] = None) -> str:
     """Render a Telegram alert from a clerk row (HTML for Telegram's parse_mode).
 
     Live Binance observation - informational only, never an order. It
@@ -263,22 +294,31 @@ def render_message(row: dict, projection: Optional[dict] = None,
     lists and unordered spans. When ``projection`` is provided it appends the
     band's realized track record; when ``efficiency`` is provided it appends
     the live 0-100 efficiency score (adaptive as real trades complete).
+    When ``decision`` (from veyra.decision.decide) is provided it renders the
+    quantified verdict banner first: TRADE / WATCH / STAND_ASIDE with R:R,
+    sample, expectancy and the blocking reason — the evidence layer that
+    makes the call worth considering (or explicitly not).
     """
     from html import escape as _esc  # local, only used for rendering output
 
     sym = _esc(str(row.get("symbol", "?")))
-    tf = _esc(str(row.get("timeframe", "?")))
+    tf_raw = str(row.get("timeframe", "?"))
+    tf = _esc(tf_raw)
+    side_raw = str(row.get("side", "?")).upper()
     side = _esc(str(row.get("side", "?")))
     setup_type = _esc(str(row.get("setup_type", "?")))
     state = _esc(str(row.get("state", "?")))
+    tf_arg = timeframe or tf_raw
 
+    low = _parse_float(row.get("interest_area_low"))
+    high = _parse_float(row.get("interest_area_high"))
     zone = None
-    if row.get("interest_area_low") is not None and row.get("interest_area_high") is not None:
-        zone = (f"${float(row['interest_area_low']):,.1f} \u2013 "
-                f"${float(row['interest_area_high']):,.1f}")
+    if low is not None and high is not None:
+        zone = (f"${low:,.1f} \u2013 "
+                f"${high:,.1f}")
 
     side_emoji = {"LONG": "\U0001F7E2", "SHORT": "\U0001F534", "BUY": "\U0001F7E2",
-                  "SELL": "\U0001F534"}.get(side.upper(), "\u25B6\U0000FE0F")
+                  "SELL": "\U0001F534"}.get(side_raw, "\u25B6\U0000FE0F")
 
     lines = []
     # Header bar - the pair-marker: traders see LIVE SETUP now, then the
@@ -288,6 +328,49 @@ def render_message(row: dict, projection: Optional[dict] = None,
     lines.append(
         f"<code>Status: {state} \u00B7 score {row.get('score','?')}/100</code>"
     )
+    lines.append("<i>Score = quality rank, not win probability.</i>")
+    # Quantified verdict banner — the evidence layer that makes this worth
+    # considering (or explicitly not). Rendered first so a weak setup can
+    # never be mistaken for a recommendation.
+    _dec = decision or row.get("decision")
+    if isinstance(_dec, dict) and _dec.get("verdict"):
+        _v = str(_dec.get("verdict")).upper()
+        _n = _dec.get("n") or 0
+        _wr = _dec.get("win_rate")
+        _exp = _dec.get("expectancy")
+        _rr = _dec.get("rr")
+        _es = _dec.get("efficiency_score")
+        if _v == "TRADE":
+            lines.append("<b>Verdict: TRADE — worth considering</b>")
+        elif _v == "WATCH":
+            lines.append("<b>Verdict: WATCH — monitor, do not size</b>")
+        else:
+            lines.append("<b>Verdict: STAND ASIDE — no edge on current evidence</b>")
+        _bits = []
+        if _n:
+            _bits.append(f"n={int(_n)}")
+        if _wr is not None:
+            try:
+                _bits.append(f"win {float(_wr)*100:.0f}%")
+            except (TypeError, ValueError):
+                pass
+        if _exp is not None:
+            try:
+                _bits.append(f"exp {float(_exp)*100:+.2f}%/trade")
+            except (TypeError, ValueError):
+                pass
+        if _rr is not None:
+            try:
+                _bits.append(f"R:R {float(_rr):.2f}")
+            except (TypeError, ValueError):
+                pass
+        if _es is not None:
+            _bits.append(f"eff {_es}/100")
+        if _bits:
+            lines.append("<code>" + _esc(" · ".join(_bits)) + "</code>")
+        _why = "; ".join(str(x) for x in (_dec.get("reasons") or []) if x)
+        if _why and _v != "TRADE":
+            lines.append(f"<i>Why: {_esc(_why)}</i>")
     lines.append("")
 
     # Setup detail
@@ -301,6 +384,49 @@ def render_message(row: dict, projection: Optional[dict] = None,
     reason = row.get("reasoning")
     if reason:
         lines.append(f"\u2022 <b>Why:</b> {_esc(str(reason).strip())}")
+
+    # Trigger - explicit action cue so users stop guessing entries.
+    if low is not None and high is not None:
+        if side_raw in ("LONG", "BUY"):
+            lines.append(f"\u2022 <b>Trigger:</b> wait for {tf_raw} close holding above "
+                         f"${high:,.1f}; entry next open. No chase &gt;1% above zone.")
+        elif side_raw in ("SHORT", "SELL"):
+            lines.append(f"\u2022 <b>Trigger:</b> wait for {tf_raw} close holding below "
+                         f"${low:,.1f}; entry next open. No chase &gt;1% below zone.")
+        else:
+            lines.append(f"\u2022 <b>Trigger:</b> next {tf_raw} open after {state}; confirm on close.")
+    else:
+        lines.append(f"\u2022 <b>Trigger:</b> next {tf_raw} open after {state}; confirm on close.")
+    live_px = _parse_float(row.get("live_price"))
+    if live_px is not None:
+        lines.append(f"\u2022 <b>Live price:</b> ${live_px:,.1f}")
+    lines.append("")
+
+    # Risk box - fixed-budget sizing, never an order.
+    cap = float(amount) if amount else 1000.0
+    entry_est = (low + high) / 2.0 if (low is not None and high is not None and high > 0) else None
+    stop_px = _parse_float(inval)
+    atr = _parse_float(row.get("atr"))
+    stop_pct: float | None = None
+    stop_label = ""
+    if entry_est and stop_px and stop_px > 0:
+        if (side_raw in ("LONG", "BUY") and stop_px < entry_est) or \
+           (side_raw in ("SHORT", "SELL") and stop_px > entry_est):
+            stop_pct = abs(entry_est - stop_px) / entry_est
+            stop_label = f"${stop_px:,.1f}"
+    if stop_pct is None and entry_est and atr and atr > 0:
+        # Fallback mirrors paper engine: stop = 2x ATR from entry estimate.
+        stop_pct = (atr * 2.0) / entry_est
+        stop_label = f"~${entry_est - atr * 2.0:,.1f} (2x ATR)" if side_raw in ("LONG", "BUY") \
+            else f"~${entry_est + atr * 2.0:,.1f} (2x ATR)"
+    lines.append("<b>Risk \u00B7 position guide (not an order)</b>")
+    if stop_pct and stop_pct > 1e-6:
+        size = min(cap, float(risk_usd) / stop_pct)
+        lines.append(f"\u2022 Stop {stop_label} ({stop_pct*100:.2f}%) \u00B7 risk "
+                     f"${float(risk_usd):,.0f} \u00B7 size ~${size:,.0f} of ${cap:,.0f} cap")
+    else:
+        lines.append(f"\u2022 Risk ${float(risk_usd):,.0f}/trade \u00B7 size up to ${cap:,.0f} "
+                     f"\u00B7 stop = invalidation")
     lines.append("")
 
     # Edge / evidence
@@ -323,31 +449,54 @@ def render_message(row: dict, projection: Optional[dict] = None,
     lines.append("\u2022 live Binance observation \u2013 updated on each scan; "
                  "not a once-off")
 
+    rr_shown = False
     if projection and projection.get("n"):
         n = int(projection["n"])
         mr = projection.get("mean_return")
         risk = projection.get("risk")
         est_pnl = None
         if mr is not None and amount:
-            est_pnl = amount * mr
+            est_pnl = float(amount) * float(mr)
         if est_pnl is not None:
             signs = "+" if est_pnl >= 0 else "-"
-            lines.append(f"\u2022 <b>Est. 24h P&L @ ${amount:,.0f}:</b> "
-                         f"{signs}${abs(est_pnl):,.0f}")
+            lines.append(f"\u2022 <b>Est. 24h P&L @ ${float(amount):,.0f}:</b> "
+                         f"{signs}${abs(est_pnl):,.0f} (n={n})")
         elif mr is not None:
-            lines.append(f"\u2022 <b>Est. 24h return:</b> {mr*100:+.2f}%")
+            lines.append(f"\u2022 <b>Est. 24h return:</b> {float(mr)*100:+.2f}% (n={n})")
+        else:
+            lines.append(f"\u2022 Track record n={n}")
         if risk is not None and mr is not None:
-            edge = "edged" if abs(mr) > abs(risk) else "not edged"
-            lines.append(f"\u2022 Upside {abs(mr)*100:.2f}% vs downside "
-                         f"{abs(risk)*100:.2f}% ({edge})")
-        if timeframe:
+            try:
+                mr_f, risk_f = float(mr), float(risk)
+                edge = "edged" if abs(mr_f) > abs(risk_f) else "not edged"
+                lines.append(f"\u2022 Upside {abs(mr_f)*100:.2f}% vs downside "
+                             f"{abs(risk_f)*100:.2f}% ({edge})")
+                if risk_f > 1e-9:
+                    lines.append(f"\u2022 <b>Est. R:R ~{abs(mr_f)/abs(risk_f):.2f}</b> "
+                                 f"(reward vs downside)")
+                    rr_shown = True
+            except (TypeError, ValueError):
+                pass
+        if tf_arg:
             horizon_txt = {"4H": "next 24h / ~4 bars",
                            "1D": "next 24h / ~1 day",
-                           "15m": "next few hours"}.get(timeframe, "next 24h")
+                           "15m": "next few hours",
+                           "1H": "next 24h / ~24 bars"}.get(tf_arg, "next 24h")
             lines.append(f"\u2022 <b>Window:</b> live until invalidation \u00B7 "
                          f"projection {horizon_txt}")
+    if not rr_shown and stop_pct and stop_pct > 1e-6 and entry_est and low is not None and high is not None:
+        # Structural fallback R:R so entry always shows one honest number.
+        zone_h = abs(high - low) / entry_est if entry_est else 0
+        if zone_h > 0:
+            lines.append(f"\u2022 <b>Struct. R:R ~{zone_h/stop_pct:.2f}</b> (zone height vs stop)")
 
     lines.append("")
+    alert_id = row.get("alert_id") or row.get("setup_key") or "n/a"
+    lines.append(f"<code>ID: {_esc(str(alert_id))}</code>")
+    if track_url:
+        lines.append(f"Track record: {_esc(str(track_url))}")
+    else:
+        lines.append("Track: full win+loss ledger in pinned post")
     lines.append("<i>Live Binance observation \u2014 informational only, not an "
                  "order. Never a guarantee \u2014 always manage your own risk.</i>")
     return "\n".join(lines)

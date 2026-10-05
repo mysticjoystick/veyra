@@ -47,11 +47,11 @@ LIVE_LOOKBACK = 400
 _REFRESH_EXTRA_BARS = 3
 
 # Short result cache: the dashboard polls /api/live, /api/efficiency and the
-# runner from the same shared LiveScan within a few seconds of each other.
+# runner from the same shared LiveScan within a minute of each other.
 # Caching avoids re-running the ingest + pipeline on every poll. TTL is kept
-# above the dashboard's 15s poll so each front-end poll window is served from
+# at the dashboard's 60s poll so each front-end poll window is served from
 # cache; the 60s runner always sees fresh data.
-_CACHE_TTL_S = 20.0
+_CACHE_TTL_S = 60.0
 
 
 class LiveScan:
@@ -171,7 +171,10 @@ class LiveScan:
 
         jobs = {i: ds for i, ds in enumerate(datasets)}
         out: List[dict] = []
-        with ThreadPoolExecutor(max_workers=max(1, len(jobs))) as pool:
+        # Cap workers: 12 parallel pipelines pegged CPU for 10s+ on page load.
+        # 4 workers keeps tail scans fast without starving uvicorn.
+        workers = max(1, min(4, len(jobs)))
+        with ThreadPoolExecutor(max_workers=workers) as pool:
             futures = {
                 pool.submit(self._scan_one, symbol, timeframe, refresh): idx
                 for idx, (symbol, timeframe) in (
@@ -179,7 +182,7 @@ class LiveScan:
                 )
             }
             ordered = [
-                (futures[f], f.result())
+                (futures[f], f.result(timeout=30))
                 for f in futures
             ]
         # Sort back to the original dataset order.
@@ -221,6 +224,7 @@ class LiveScan:
         barrier = {"interval_s": 0, "next_open": 0, "seconds_left": 0, "age_s": 0}
         live_price = None
         fresh = "stored"
+        candles = None
 
         try:
             if refresh:

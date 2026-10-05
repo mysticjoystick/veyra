@@ -64,13 +64,44 @@ def _scan_and_notify(settings, scan: LiveScan, clerk: NotifyClerk,
     live_trades = _live_trade_returns(symbol, timeframe)
     rows = clerk.scan_live([live])
     sent = 0
+    track = (getattr(settings, "channel_invite_url", "") or "").strip() or None
+    risk_budget = float(getattr(settings, "paper_risk_per_trade", 10.0) or 10.0)
+    # Decision gate: only TRADE-verdict setups are worth alerting. WATCH /
+    # STAND_ASIDE rows are logged as suppressed (transparent, never sent) so
+    # the channel only ever carries setups whose own track record says they
+    # have an edge. The clerk state already advanced, so no spam on retry.
+    from .decision import verdict_for_market as _verdict_for_market
+
+    _setups_by_key = {
+        (str(s.get("setup_type") or ""), str(s.get("side") or "")): s
+        for s in (live.get("setups") or [])
+    }
     for r in rows:
         pri_row = r
-        band = _band_for(int(live.get("overall_score") or 0))
+        band = _band_for(int(r.get("score") or live.get("overall_score") or 0))
         proj = proj_rows.get(band)
         eff = efficiency_score(proj, live_trades)
+        _setup_ctx = _setups_by_key.get(
+            (str(r.get("setup_type") or ""), str(r.get("side") or "")), {}
+        )
+        _setup_ctx = dict(_setup_ctx or {})
+        _setup_ctx.setdefault("time", timeframe)
+        _setup_ctx.setdefault("timeframe", timeframe)
+        decision = _verdict_for_market(
+            int(r.get("score") or 0), proj_rows, live_trades, setup=_setup_ctx or r
+        )
+        pri_row["decision"] = decision
+        if decision.get("verdict") != "TRADE":
+            logger.info(
+                "suppressed %s %s %s %s: %s (%s)",
+                symbol, timeframe, r.get("setup_type"), r.get("side"),
+                decision.get("verdict"), "; ".join(decision.get("reasons") or []),
+            )
+            continue
         msg = render_message(pri_row, projection=proj, amount=amount,
-                             timeframe=timeframe, efficiency=eff)
+                             timeframe=timeframe, efficiency=eff,
+                             track_url=track, risk_usd=risk_budget,
+                             decision=decision)
         if notifier.configured and not notifier.gated:
             result = notifier.send(msg)
             if result.get("sent"):
@@ -259,12 +290,39 @@ class LiveAlertRunner:
         rows = self._clerk.scan_live([live])
         sent = 0
         last_msg = None
+        track = (getattr(self._settings, "channel_invite_url", "") or "").strip() or None
+        risk_budget = float(getattr(self._settings, "paper_risk_per_trade", 10.0) or 10.0)
+        from .decision import verdict_for_market as _verdict_for_market
+
+        _setups_by_key = {
+            (str(s.get("setup_type") or ""), str(s.get("side") or "")): s
+            for s in (live.get("setups") or [])
+        }
         for r in rows:
-            band = _band_for(int(live.get("overall_score") or 0))
+            band = _band_for(int(r.get("score") or live.get("overall_score") or 0))
             proj = proj_rows.get(band)
             eff = efficiency_score(proj, live_trades)
+            _setup_ctx = _setups_by_key.get(
+                (str(r.get("setup_type") or ""), str(r.get("side") or "")), {}
+            )
+            _setup_ctx = dict(_setup_ctx or {})
+            _setup_ctx.setdefault("time", timeframe)
+            _setup_ctx.setdefault("timeframe", timeframe)
+            decision = _verdict_for_market(
+                int(r.get("score") or 0), proj_rows, live_trades, setup=_setup_ctx or r
+            )
+            r["decision"] = decision
+            if decision.get("verdict") != "TRADE":
+                logger.info(
+                    "suppressed %s %s %s %s: %s (%s)",
+                    symbol, timeframe, r.get("setup_type"), r.get("side"),
+                    decision.get("verdict"), "; ".join(decision.get("reasons") or []),
+                )
+                continue
             msg = render_message(r, projection=proj, amount=self._amount,
-                                 timeframe=timeframe, efficiency=eff)
+                                 timeframe=timeframe, efficiency=eff,
+                                 track_url=track, risk_usd=risk_budget,
+                                 decision=decision)
             last_msg = msg
             if self._notifier.configured and not self._notifier.gated:
                 result = self._notifier.send(msg)

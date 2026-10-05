@@ -456,7 +456,10 @@ def test_stopout_closes_at_stop_price_on_first_breach(tmp_path, monkeypatch):
 
     class _StopEngine(LivePaperEngine):
         def _market_alerts(self, symbol, timeframe):
-            return [{"band": "CONVERGENT", "net_24h": x} for x in (0.06, 0.04, 0.05)]
+            # 40 obs (n>=20 floor) with a real edge so the quantified
+            # decision gate passes and the stop logic itself is exercised.
+            return [{"band": "CONVERGENT", "net_24h": x}
+                    for x in (0.06, 0.04, 0.05, -0.01) * 10]
 
     # Candles: entry at ts0; the very next bar lows out at 90 (long stop 95).
     rows = []

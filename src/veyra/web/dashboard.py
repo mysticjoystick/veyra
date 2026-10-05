@@ -28,7 +28,7 @@ from typing import Optional
 
 from fastapi import Depends, FastAPI, Query, Request, WebSocket, WebSocketDisconnect
 
-_DASHBOARD_CACHE_TTL = 15.0
+_DASHBOARD_CACHE_TTL = 60.0
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
@@ -62,6 +62,25 @@ DEFAULT_DATASETS = [
 _DEFAULT_STREAM_TIMEFRAMES = ["1D", "4H", "1H"]
 _DEFAULT_STREAM_SYMBOLS = ("BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT")
 _stream_singleton: Optional[BinanceStream] = None
+
+
+# Core 4 markets for instant mobile paint (BTC/ETH x 4H/1D). Full 12 load on demand.
+CORE_DATASETS = [
+    {"symbol": "BTC/USDT", "timeframe": "4H"},
+    {"symbol": "BTC/USDT", "timeframe": "1D"},
+    {"symbol": "ETH/USDT", "timeframe": "4H"},
+    {"symbol": "ETH/USDT", "timeframe": "1D"},
+]
+
+
+def _slice_datasets(datasets: list, limit: int | None) -> list:
+    """Return first `limit` datasets; None/0 means all. Never raises."""
+    try:
+        if limit is None or limit <= 0:
+            return list(datasets)
+        return list(datasets)[: max(1, min(int(limit), len(datasets)))]
+    except Exception:  # noqa: BLE001
+        return list(datasets)
 
 
 def _get_shared_stream(symbols: list, timeframes: list) -> BinanceStream:
@@ -187,11 +206,49 @@ def create_dashboard(
         description="Veyra selective setup-alert dashboard (signals only)",
         lifespan=lifespan,
     )
+    # Perf: gzip HTML/JSON so mobile 4G pays ~1/4 bytes. Cheap, no behavior change.
+    try:
+        from fastapi.middleware.gzip import GZipMiddleware
+
+        app.add_middleware(GZipMiddleware, minimum_size=1024)
+    except Exception:  # noqa: BLE001 - compression is best-effort
+        pass
     templates = Jinja2Templates(directory=str(template_dir))
     _fmt_dt = _make_dt_filter()
     templates.env.filters["dt"] = _fmt_dt
     templates.env.globals["outcome_badge"] = _render_outcome_badge
     templates.env.globals["clarity"] = _clarity_for
+
+    # PWA: public install + offline-shell surface (no auth so Chrome can
+    # fetch the manifest/icons/SW before login and show the Install prompt).
+    _STATIC_DIR = Path(__file__).resolve().parent / "static"
+    try:
+        from fastapi.responses import FileResponse
+        from fastapi.staticfiles import StaticFiles
+
+        if _STATIC_DIR.exists():
+            app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="veyra-static")
+
+        @app.get("/manifest.webmanifest", include_in_schema=False)
+        def pwa_manifest():
+            path = _STATIC_DIR / "manifest.webmanifest"
+            return FileResponse(str(path), media_type="application/manifest+json", headers={"Cache-Control": "public, max-age=86400"})
+
+        @app.get("/sw.js", include_in_schema=False)
+        def pwa_sw():
+            path = _STATIC_DIR / "sw.js"
+            return FileResponse(str(path), media_type="application/javascript", headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"})
+
+        @app.get("/icons/{name}", include_in_schema=False)
+        def pwa_icon(name: str):
+            safe = {"icon-192.png", "icon-512.png", "apple-touch-icon.png"}
+            if name not in safe:
+                from fastapi import HTTPException as _HE
+
+                raise _HE(status_code=404, detail="unknown icon")
+            return FileResponse(str(_STATIC_DIR / "icons" / name), media_type="image/png", headers={"Cache-Control": "public, max-age=31536000, immutable"})
+    except Exception:  # noqa: BLE001 - PWA is additive, never breaks dashboard
+        logger.warning("PWA static mount skipped")
 
     # Per-app page cache: keeps repeated renders instant without ever sending
     # one app's (or test's) data to another.
@@ -221,34 +278,62 @@ def create_dashboard(
     def dashboard(
         request: Request,
         force: int = Query(default=0, ge=0, le=1, description="Force full recompute (may be slow)"),
+        shell: int = Query(default=0, ge=0, le=1, description="Shell-only instant paint; JS hydrates via APIs"),
+        markets: int = Query(default=0, ge=0, le=12, description="Limit server-rendered markets (0=all, 4=core mobile set)"),
         _user: object = Depends(require_user),
     ) -> HTMLResponse:
         import time as _time
         now = _time.time()
         page_cache = app.state.dashboard_cache
+        cache_key = f"{shell}|{markets}|{force}"
+        cached_entry = page_cache.get(cache_key)
 
-        if not force and page_cache["context"] and now - page_cache["ts"] < _DASHBOARD_CACHE_TTL:
-            return templates.TemplateResponse(request, "dashboard.html", page_cache["context"])
+        if not force and cached_entry and now - cached_entry["ts"] < _DASHBOARD_CACHE_TTL:
+            resp = templates.TemplateResponse(request, "dashboard.html", cached_entry["context"])
+            resp.headers["Cache-Control"] = "private, max-age=30"
+            resp.headers["X-Veyra-Shell"] = str(shell)
+            return resp
 
+        # Shell-first: skip the 2x live_all pipeline scans (12 x 400-bar each)
+        # and serve cache-only aggregates. Client hydrates live data via
+        # /api/lifecycle (single poll) after first paint. ~80% server time saved.
+        wanted = _slice_datasets(DEFAULT_DATASETS, markets if markets else None)
         payload = svc.compute_all(force=False, blocking=False)
+        # Filter payload to wanted markets so ?markets=4 renders a small page.
+        try:
+            _want_keys = {f"{d['symbol']}|{d['timeframe']}" for d in wanted}
+            _all_ds = payload.get("datasets", [])
+            payload = {**payload, "datasets": [d for d in _all_ds if f"{d.get('symbol')}|{d.get('timeframe')}" in _want_keys] or _all_ds}
+        except Exception:  # noqa: BLE001
+            pass
         latest = svc.latest(LATEST_DEFAULT)
 
-        try:
-            live_markets = scan.live_all(DEFAULT_DATASETS, refresh=False)
-        except Exception:
-            live_markets = []
-
-        try:
-            portfolio = svc.portfolio(amount=1000.0, scan=scan, refresh=False, blocking=False)
-        except Exception:
+        if shell:
+            live_markets: list = []
             portfolio = {"amount": 1000.0, "markets": []}
-
-        try:
-            walkforward = svc.walkforward(fraction=0.30, blocking=False)
-        except Exception:
             walkforward = None
+            efficiency_map = {}
+        else:
+            # Default (non-shell) still stays fast: server-render only the core
+            # 4 live cards (BTC/ETH 4H/1D); the full 12-market pipeline hydrates
+            # via /api/lifecycle after first paint. Cuts 12x400-bar scans to 4x.
+            _core_live = wanted[:4] if len(wanted) > 4 else wanted
+            try:
+                live_markets = scan.live_all(_core_live, refresh=False)
+            except Exception:
+                live_markets = []
 
-        efficiency_map = _build_efficiency_map(live_markets)
+            try:
+                portfolio = svc.portfolio(amount=1000.0, scan=scan, refresh=False, blocking=False)
+            except Exception:
+                portfolio = {"amount": 1000.0, "markets": []}
+
+            try:
+                walkforward = svc.walkforward(fraction=0.30, blocking=False)
+            except Exception:
+                walkforward = None
+
+            efficiency_map = _build_efficiency_map(live_markets)
         runner_status = runner.status() if runner is not None else {
             "running": False, "markets": [], "configured": False, "gated": False}
         context = _render_context(
@@ -261,16 +346,24 @@ def create_dashboard(
             efficiency_map=efficiency_map,
             runner_status=runner_status,
         )
+        # Tell the template it is a shell so it can render skeletons + hydrate.
+        context["is_shell"] = bool(shell)
+        context["markets_limit"] = markets or 0
 
+        page_cache[cache_key] = {"context": context, "ts": now}
+        # Keep legacy key for tests that poke app.state.dashboard_cache["context"].
         page_cache["context"] = context
         page_cache["ts"] = now
 
         def _bg_refresh():
             try:
-                scan.live_all(DEFAULT_DATASETS, refresh=True)
-                svc.compute_all(force=False, blocking=True)
-                svc.portfolio(amount=1000.0, scan=scan, refresh=True, blocking=True)
-                svc.walkforward(fraction=0.30)
+                # Light refresh only: live tail (cached) + cache-first aggregates.
+                # Full history replay (blocking=True) is CLI-only (`veyra alert`)
+                # — running it here on every page expiry pegged CPU for 10s+.
+                scan.live_all(wanted, refresh=False)
+                svc.compute_all(force=False, blocking=False)
+                svc.portfolio(amount=1000.0, scan=scan, refresh=False, blocking=False)
+                svc.walkforward(fraction=0.30, blocking=False)
             except Exception:
                 pass
 
@@ -280,7 +373,10 @@ def create_dashboard(
         except Exception:
             pass
 
-        return templates.TemplateResponse(request, "dashboard.html", context)
+        resp = templates.TemplateResponse(request, "dashboard.html", context)
+        resp.headers["Cache-Control"] = "private, max-age=30"
+        resp.headers["X-Veyra-Shell"] = str(shell)
+        return resp
 
     @app.get("/api/alerts")
     def api_alerts(
@@ -289,12 +385,35 @@ def create_dashboard(
     ) -> JSONResponse:
         return JSONResponse(svc.compute_all(force=bool(force), blocking=False))
 
+    @app.get("/healthz")
+    def healthz() -> JSONResponse:
+        """Liveness probe for uptime monitors / load balancers (no auth)."""
+        return JSONResponse({"status": "ok", "name": "veyra", "version": __version__})
+
+    @app.get("/readyz")
+    def readyz() -> JSONResponse:
+        """Readiness probe: DB + candle store reachable (no auth, cheap)."""
+        try:
+            settings = get_settings()
+            db_ok = settings.absolute_database_path.parent.exists()
+            cs_ok = settings.absolute_candle_store_dir.exists()
+            ok = bool(db_ok or cs_ok)
+            return JSONResponse({"ready": ok, "db_parent_exists": db_ok, "candle_store_exists": cs_ok})
+        except Exception as exc:  # noqa: BLE001
+            return JSONResponse({"ready": False, "error": str(exc)})
+
     @app.get("/api/live")
-    def api_live(_user: object = Depends(require_user)) -> JSONResponse:
+    def api_live(
+        markets: int = Query(default=0, ge=0, le=12, description="Limit markets (0=all, 4=core mobile set)"),
+        _user: object = Depends(require_user),
+    ) -> JSONResponse:
         """Fast real-time scan over the latest candle tail (no history replay)."""
-        return JSONResponse(
-            {"markets": scan.live_all(DEFAULT_DATASETS, refresh=False), "note": "signals only"}
+        wanted = _slice_datasets(DEFAULT_DATASETS, markets if markets else None)
+        resp = JSONResponse(
+            {"markets": scan.live_all(wanted, refresh=False), "note": "signals only"}
         )
+        resp.headers["Cache-Control"] = "private, max-age=15"
+        return resp
 
     @app.get("/api/efficiency")
     def api_efficiency(_user: object = Depends(require_user)) -> JSONResponse:
@@ -363,11 +482,20 @@ def create_dashboard(
     @app.get("/api/portfolio")
     def api_portfolio(
         amount: Optional[float] = Query(default=None, ge=0, description="trade size"),
+        markets: int = Query(default=0, ge=0, le=12, description="Limit markets (0=all)"),
         _user: object = Depends(require_user),
     ) -> JSONResponse:
         """Best-right-now ranking of all markets by projected 24h P&L."""
         try:
-            return JSONResponse(svc.portfolio(amount=amount, blocking=False))
+            data = svc.portfolio(amount=amount, blocking=False)
+            if markets:
+                try:
+                    data = {**data, "markets": (data.get("markets") or [])[: int(markets)]}
+                except Exception:  # noqa: BLE001
+                    pass
+            resp = JSONResponse(data)
+            resp.headers["Cache-Control"] = "private, max-age=30"
+            return resp
         except Exception as exc:  # noqa: BLE001
             return JSONResponse({"error": str(exc)})
 
@@ -454,6 +582,7 @@ def create_dashboard(
 
     @app.get("/api/lifecycle")
     def api_lifecycle(
+        markets: int = Query(default=0, ge=0, le=12, description="Limit markets (0=all, 4=core mobile set)"),
         _user: object = Depends(require_user),
     ) -> JSONResponse:
         """Trade lifecycle: live setups -> open positions -> settled -> published.
@@ -466,10 +595,14 @@ def create_dashboard(
         try:
             from ..paper.live import LivePaperEngine
 
-            return JSONResponse(_lifecycle_payload(
+            payload = _lifecycle_payload(
                 LivePaperEngine(get_settings()),
                 scan, svc, get_settings(),
-            ))
+                datasets=_slice_datasets(DEFAULT_DATASETS, markets if markets else None),
+            )
+            resp = JSONResponse(payload)
+            resp.headers["Cache-Control"] = "private, max-age=15"
+            return resp
         except Exception as exc:  # noqa: BLE001
             return JSONResponse({"markets": [], "stats": {}, "error": str(exc)})
 
@@ -537,8 +670,8 @@ def create_dashboard(
             "strategy_version": _strategy_version(svc),
             "datasets": [d for d in svc.datasets()],
             "worker": {
-                "poll_s": 15,
-                "refresh_hint": "pipeline & scanner refresh every 15s; alerts/history on every poll",
+                "poll_s": 60,
+                "refresh_hint": "pipeline & scanner refresh every 60s; alerts/history on every poll",
             },
             "runner": {
                 "running": bool(run.get("running")),
@@ -634,7 +767,7 @@ def _build_efficiency_map(live_markets: list) -> dict:
 _db_factory_cache = None
 
 
-def _lifecycle_payload(engine, scan, svc, settings) -> dict:
+def _lifecycle_payload(engine, scan, svc, settings, datasets=None) -> dict:
     """Aggregate the full trade lifecycle for the dashboard pipeline view.
 
     Never raises on a missing file or ledger: the page must not fail because a
@@ -643,7 +776,8 @@ def _lifecycle_payload(engine, scan, svc, settings) -> dict:
     """
     from ..alerts.models import AlertLevel
 
-    live_markets = scan.live_all(DEFAULT_DATASETS, refresh=False)
+    wanted = list(datasets) if datasets is not None else list(DEFAULT_DATASETS)
+    live_markets = scan.live_all(wanted, refresh=False)
     live_map = {f"{m.get('symbol')}|{m.get('timeframe')}": m for m in live_markets}
     eff_map = _build_efficiency_map(live_markets)
 
@@ -657,7 +791,7 @@ def _lifecycle_payload(engine, scan, svc, settings) -> dict:
         portfolio_rows = {}
 
     snapshots: dict = {}
-    for ds in DEFAULT_DATASETS:
+    for ds in wanted:
         key = f"{ds['symbol']}|{ds['timeframe']}"
         snap = _load_eff_snapshot(settings, ds["symbol"], ds["timeframe"])
         if snap:
@@ -684,7 +818,7 @@ def _lifecycle_payload(engine, scan, svc, settings) -> dict:
     open_total = closed_total = wins = 0
     sum_pnl = 0.0
     all_closed: list = []
-    for ds in DEFAULT_DATASETS:
+    for ds in wanted:
         symbol, tf = ds["symbol"], ds["timeframe"]
         try:
             ledger = engine.load(symbol, tf)
@@ -723,12 +857,42 @@ def _lifecycle_payload(engine, scan, svc, settings) -> dict:
         band = None
         if live_score is not None:
             band = AlertLevel.for_score(live_score).name
+        # Quantified decision per setup (TRADE / WATCH / STAND_ASIDE).
+        # Best-effort: a weak setup is still shown for transparency, but
+        # labelled STAND_ASIDE with its blocking reason — never as tradable.
+        decision = None
+        try:
+            from ..decision import verdict_for_market as _verdict_for_market
+            from ..live_runner import _live_trade_returns as _live_rets
+            from ..live_runner import _projection_rows as _proj_rows
+
+            _rows = _proj_rows(symbol, tf)
+            _live_tr = _live_rets(symbol, tf)
+            for s in setups:
+                try:
+                    _ctx = dict(s or {})
+                    _ctx.setdefault("time", tf)
+                    _ctx.setdefault("timeframe", tf)
+                    s["decision"] = _verdict_for_market(
+                        int(s.get("overall_score") or 0), _rows, _live_tr, setup=_ctx
+                    )
+                except Exception:  # noqa: BLE001 - one bad setup never breaks page
+                    s["decision"] = {
+                        "verdict": "STAND_ASIDE", "reasons": ["decision_unavailable"],
+                    }
+            if top is not None:
+                decision = (top.get("decision") or {})
+            elif live_score is not None:
+                decision = _verdict_for_market(live_score, _rows, _live_tr, setup=None)
+        except Exception:  # noqa: BLE001 - decision is display-only
+            decision = decision or None
         markets.append({
             "symbol": symbol,
             "timeframe": tf,
             "live_score": live_score,
             "live_band": band,
             "live_price": live.get("live_price"),
+            "decision": decision,
             "context": {
                 "regime": live.get("regime"),
                 "regime_reason": live.get("regime_reason") or "",
