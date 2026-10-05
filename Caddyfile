@@ -1,0 +1,5 @@
+# Caddy reverse proxy: public HTTPS (auto certificate) -> veyra:8000.
+# YOUR_DOMAIN comes from the shell env (e.g. you.duckdns.org, free via DuckDNS).
+{$YOUR_DOMAIN} {
+	reverse_proxy veyra:8000
+}

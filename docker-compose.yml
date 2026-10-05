@@ -1,0 +1,50 @@
+# Veyra free-hosting stack: app + automatic HTTPS (no domain purchase needed).
+# Runs on any Always-Free VM (Oracle Ampere ARM or GCP e2-micro):
+#   veyra  — the dashboard (uvicorn, internal port 8000, never exposed directly)
+#   caddy  — reverse proxy with automatic Let's Encrypt HTTPS for YOUR_DOMAIN
+# Data (SQLite + Parquet + alert caches) lives in the `veyra-data` volume so
+# redeploys never wipe the DB, users, or paper ledgers.
+#
+# Server setup (after cloning + writing config/.env from config/.env.example):
+#   YOUR_DOMAIN=<you>.duckdns.org VEYRA_ADMIN_EMAIL=... VEYRA_ADMIN_PASSWORD=... docker compose up -d --build
+# Pre-warm once so the first visitor skips the cold replay:
+#   docker compose exec veyra python -m veyra alert
+services:
+  veyra:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - ./config/.env
+    environment:
+      VEYRA_ENVIRONMENT: prod
+    volumes:
+      - veyra-data:/app/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      YOUR_DOMAIN: ${YOUR_DOMAIN:?set YOUR_DOMAIN=<you>.duckdns.org in your shell}
+    depends_on:
+      veyra:
+        condition: service_healthy
+
+volumes:
+  veyra-data:
+  caddy-data:
+  caddy-config:
